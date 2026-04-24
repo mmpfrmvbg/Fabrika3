@@ -66,6 +66,40 @@ From the repository root, in order:
 
 **Sample data (phase 6):** after migrations, `npm run db:seed:sample-project` inserts **one** canonical `project` row (idempotent slug `fabrika-v1-sample`; see `scripts/seed-sample-project.mjs` and `DOCS/STATUS.md`).
 
+### Five-entity API smoke (phase-6 C+R + minimal outcome update)
+
+Reproducible check that the five canonical collection routes (`/api/projects`, `/api/outcomes`, …) can **read** and **create** rows against a real Postgres DB, plus **one** minimal **update** path: **`PATCH /api/outcomes/[id]`** (title only). Script: `scripts/smoke-api-five-entities.mjs`.
+
+**Prerequisites**
+
+- **Postgres** reachable via **`DATABASE_URL`** in **`.env.local`** (same file the npm script loads with `node --env-file=.env.local`).
+- **Migrations applied** (`npm run db:migrate` with a valid `DATABASE_URL`).
+- **Next dev server running** on the port you will target (default **3000**).
+
+**Command** (from repo root, in a **second** terminal while `npm run dev` is running):
+
+```bash
+npm run smoke:api-five
+```
+
+**Optional custom base URL** (if dev listens on another host/port):
+
+```bash
+npm run smoke:api-five -- http://127.0.0.1:<port>
+```
+
+**What this verifies**
+
+- Runs the sample seed path (`scripts/seed-sample-project.mjs` via the script).
+- For each of the **five** entities: **GET → POST → GET** with minimal assertions (HTTP success and created `id` visible on read).
+- For **`outcome`** only: **`PATCH /api/outcomes/[id]`** with **`{ "title": "…" }`** (invalid id → **400**, unknown id → **404**, empty title → **400**), then **GET `/api/outcomes?project_id=…`** read-back of the updated title.
+
+**What this does *not* verify**
+
+- **Update** routes for entities other than **`outcome`**, or **any** **`DELETE`** routes.
+- **UI** or browser flows.
+- **Release readiness** or governance labels beyond “API + DB respond as expected”.
+
 ### Quick path (daily dev)
 
 ```bash
@@ -85,6 +119,7 @@ npm run test:e2e    # Playwright smoke (starts `npm run dev` via webServer; syst
 npm run db:generate # Drizzle: emit SQL from ./db/schema.ts → ./db/migrations (needs env; see Drizzle docs)
 npm run db:migrate  # Drizzle: apply migrations (requires DATABASE_URL and a reachable Postgres)
 npm run db:seed:sample-project  # Inserts one sample project row (requires DATABASE_URL + migrated schema)
+npm run smoke:api-five          # Phase-6 smoke: seed + GET/POST for five API routes (needs dev server + .env.local)
 # With `npm run dev` and DATABASE_URL set, smoke-read sample project:
 # curl.exe "http://127.0.0.1:3000/api/projects?slug=fabrika-v1-sample"
 # POST JSON body: on Windows PowerShell, `curl -d "{...}"` often breaks JSON; use e.g.:

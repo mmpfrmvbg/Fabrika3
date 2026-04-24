@@ -285,6 +285,8 @@ Do NOT implement the full ERD first. Implement only minimum entities required fo
 - CRUD for **those** core entities works.
 - No full ERD overbuild yet.
 
+> **Footnote — verified baseline vs full CRUD:** The **verified today** baseline is **Create + Read** (HTTP `GET` / `POST`) for the five canonical `DATA_MODEL_V1` entities (see **`DOCS/STATUS.md`**, section **«Phase 6 — `MASTER` §6 vs фактический baseline»**, and the **`npm run smoke:api-five`** workflow in **`README.md`**). **Full CRUD is not complete** until **Update / Delete** are implemented and evidenced (or an explicit **`DOCS/DECISIONS.md`** entry narrows v1 phase-6 §6 Definition of done to **C+R only**). Until then, **`DOCS/STATUS.md` → Current Phase** for phase 6 stays **`in_progress`**; do not treat the C+R smoke baseline as completed literal CRUD.
+
 ---
 
 ## 7. APP SHELL + INFORMATION ARCHITECTURE

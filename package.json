@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed:sample-project": "node scripts/seed-sample-project.mjs"
+    "db:seed:sample-project": "node scripts/seed-sample-project.mjs",
+    "smoke:api-five": "node --env-file=.env.local scripts/smoke-api-five-entities.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
