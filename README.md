@@ -87,6 +87,10 @@ npm run db:migrate  # Drizzle: apply migrations (requires DATABASE_URL and a rea
 npm run db:seed:sample-project  # Inserts one sample project row (requires DATABASE_URL + migrated schema)
 # With `npm run dev` and DATABASE_URL set, smoke-read sample project:
 # curl.exe "http://127.0.0.1:3000/api/projects?slug=fabrika-v1-sample"
+# curl.exe "http://127.0.0.1:3000/api/outcomes?project_id=<uuid-from-projects-endpoint>"
+# curl.exe "http://127.0.0.1:3000/api/assumptions?outcome_id=<uuid-from-outcomes-endpoint>"
+# curl.exe "http://127.0.0.1:3000/api/acceptance-criteria?outcome_id=<uuid-from-outcomes-endpoint>"
+# curl.exe "http://127.0.0.1:3000/api/evidence-items?outcome_id=<uuid-from-outcomes-endpoint>"
 npm run build   # production build (Turbopack)
 npm run start   # run production server (after build)
 npm run lint    # ESLint (Next core-web-vitals + TypeScript)
