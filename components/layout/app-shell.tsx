@@ -5,13 +5,13 @@ import { StatusBadge } from "@/components/v1/status-badge";
 import { cn } from "@/lib/utils";
 
 /**
- * P7-app-shell-7-1-minimal + P7-7-2: global shell per `MASTER` §7.1 + `UI_V1.md` —
+ * P7-app-shell-7-1-minimal + P7-7-2 + P7-9-1: global shell per `MASTER` §7.1 + `UI_V1.md` —
  * left nav (workflow sections), top status bar (static honesty line + badges).
  * No data fetching, no auth, no API calls.
  */
 const SHELL_NAV = [
   { href: "/#overview", label: "Overview" },
-  { href: "/#outcomes", label: "Outcomes" },
+  { href: "/outcomes", label: "Outcomes" },
   { href: "/#assumptions", label: "Assumptions" },
   { href: "/#evidence", label: "Evidence" },
   { href: "/#release-readiness", label: "Release Readiness" },
@@ -38,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Product sections">
           {SHELL_NAV.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className={cn(
@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               )}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
       </aside>
