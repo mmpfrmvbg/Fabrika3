@@ -64,6 +64,8 @@ From the repository root, in order:
 
 **Drizzle CLI:** `npm run db:generate` and `npm run db:migrate` need a valid **`DATABASE_URL`** (and a reachable Postgres for migrate). Failing or placeholder URLs are a **documented** blocker for those commands only, not for `typecheck` / `lint` / `test` / `build`.
 
+**Sample data (phase 6):** after migrations, `npm run db:seed:sample-project` inserts **one** canonical `project` row (idempotent slug `fabrika-v1-sample`; see `scripts/seed-sample-project.mjs` and `DOCS/STATUS.md`).
+
 ### Quick path (daily dev)
 
 ```bash
@@ -82,6 +84,7 @@ npm test            # Vitest (unit smoke; `vitest run`)
 npm run test:e2e    # Playwright smoke (starts `npm run dev` via webServer; system Edge)
 npm run db:generate # Drizzle: emit SQL from ./db/schema.ts → ./db/migrations (needs env; see Drizzle docs)
 npm run db:migrate  # Drizzle: apply migrations (requires DATABASE_URL and a reachable Postgres)
+npm run db:seed:sample-project  # Inserts one sample project row (requires DATABASE_URL + migrated schema)
 npm run build   # production build (Turbopack)
 npm run start   # run production server (after build)
 npm run lint    # ESLint (Next core-web-vitals + TypeScript)
