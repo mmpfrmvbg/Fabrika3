@@ -2,28 +2,28 @@
 
 ## Single Next Step
 
-- title: **`P7-app-shell-7-1-minimal`**: по **`MASTER` §7.1** + **`DOCS/UI_V1.md`** реализовать **минимальный** глобальный shell: левая навигация (плейсхолдер-ссылки на разделы из §7.1) + верхняя полоса статуса (статический текст фазы / «prototype»); **без** реальных данных из API, **без** новых сущностей вне **`UI_V1`**, **без** смены **`MASTER`** за пределом evidence в **`STATUS`**; после — **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** и короткая ручная проверка в браузере; обновить **`DOCS/STATUS.md`**
+- title: **`P7-7-2-design-system-minimal`**: по **`MASTER` §7.2** добавить **статические** (без привязки к данным) компоненты **badges**: перечень статусов (**idea**, **specified**, **building**, **working_in_preview**, **verified**, **approved**, **live**, **blocked**), **maturity** (**prototype**, **usable**, **hardened**, **release-ready**, **live**), **risk** — как визуальные варианты (Tailwind + существующий shadcn/Button или простые **`span`**), плюс минимальное выравнивание типографики/отступов в **`AppShell`** / главной странице; **без** новых npm-зависимостей, **без** вызовов API, **без** экранов Today/Outcome; затем **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** и короткий просмотр в браузере; обновить **`DOCS/STATUS.md`**
 - owner: cursor
 - type: implementation
 - priority: high
 
 ## Why This Is The Next Step
 
-- **Фаза 6** закрыта по HTTP+DB канону; следующий последовательный блок в **`MASTER`** — **§7 app shell**.
+- **`P7-app-shell-7-1-minimal`** закрыт; в **`MASTER` §7** следующий явный блок после §7.1 — **§7.2 Shared design system** (минимальный слой перед §8 Overview screen).
 
 ## Input Needed
 
-- **`DOCS/MASTER_TODO_CURSOR.md` §7.1–§7.2**, **`DOCS/UI_V1.md`**, текущий **`app/layout.tsx`** / **`app/page.tsx`**.
+- **`DOCS/MASTER_TODO_CURSOR.md` §7.2**, **`DOCS/UI_V1.md`**, текущие **`components/ui/*`**, **`app/globals.css`**.
 
 ## Exact Action
 
-- Один сфокусированный PR по layout/nav (или два файла + минимальные компоненты), затем toolchain + **`STATUS`**.
+- Один небольшой набор компонентов (например **`components/ui/badge.tsx`** или **`components/v1-badges.tsx`**) + точечные правки layout/главной страницы.
 
 ## Definition of Done
 
-- [ ] В браузере виден **nav + top bar** по заявленному минимуму; **`STATUS`** содержит evidence.
+- [ ] В UI видны **все** перечисленные в §7.2 **имена** статусов/стадий (хотя бы в демо-рядке на dev-странице или внизу **`/`**), **`STATUS`** обновлён.
 
 ## If Blocked
 
-- fallback: зафиксировать в **`STATUS`** **blocked**, если дизайн shell противоречит **`UI_V1`** без правки scope.
-- escalate_to_user_if: Владелец запрещает любой UI до другой фазы.
+- fallback: зафиксировать **blocked** в **`STATUS`**, если shadcn-конвенции конфликтуют с минимализмом без новых пакетов.
+- escalate_to_user_if: Нужен другой дизайн-токен / библиотека иконок.
