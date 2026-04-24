@@ -7,7 +7,7 @@ import { evidenceItem, outcome } from "@/db/schema";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UUID_RE =
+export const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const EVIDENCE_TYPES = [
@@ -45,7 +45,7 @@ function isPgForeignKeyViolation(err: unknown): boolean {
   return /foreign key|violates foreign key/i.test(msg);
 }
 
-function mapEvidenceRow(e: {
+export function mapEvidenceRow(e: {
   id: string;
   outcomeId: string;
   evidenceType: string;

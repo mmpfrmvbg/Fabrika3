@@ -7,7 +7,7 @@ import { assumption, outcome } from "@/db/schema";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UUID_RE =
+export const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const CRITICALITIES = ["low", "medium", "high", "critical"] as const;
@@ -44,7 +44,7 @@ function isPgForeignKeyViolation(err: unknown): boolean {
   return /foreign key|violates foreign key/i.test(msg);
 }
 
-function mapAssumptionRow(a: {
+export function mapAssumptionRow(a: {
   id: string;
   outcomeId: string;
   code: string | null;

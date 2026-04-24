@@ -2,10 +2,10 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
-import { outcome } from "@/db/schema";
+import { evidenceItem } from "@/db/schema";
 import { isPgForeignKeyViolation } from "@/lib/is-pg-foreign-key-violation";
 
-import { mapOutcomeRow, UUID_RE } from "../route";
+import { mapEvidenceRow, UUID_RE } from "../route";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +15,8 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 /**
- * P6-outcome-patch-minimal: PATCH `/api/outcomes/[id]` — body `{ "title": "<non-empty>" }` only.
- * Invalid `id` (not UUID) → **400**. Unknown outcome → **404**. Missing/empty `title` → **400**.
+ * P6-evidence-item-patch-minimal: PATCH `/api/evidence-items/[id]` — body `{ "title": "<non-empty>" }` only.
+ * Invalid `id` → **400**. Unknown row → **404**. Missing/empty `title` → **400**.
  */
 export async function PATCH(
   request: Request,
@@ -76,18 +76,21 @@ export async function PATCH(
 
     const [existing] = await db
       .select()
-      .from(outcome)
-      .where(eq(outcome.id, id))
+      .from(evidenceItem)
+      .where(eq(evidenceItem.id, id))
       .limit(1);
 
     if (!existing) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "evidence_item not found" },
+        { status: 404 },
+      );
     }
 
     const [updated] = await db
-      .update(outcome)
+      .update(evidenceItem)
       .set({ title, updatedAt: new Date() })
-      .where(eq(outcome.id, id))
+      .where(eq(evidenceItem.id, id))
       .returning();
 
     if (!updated) {
@@ -97,7 +100,7 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ outcome: mapOutcomeRow(updated) });
+    return NextResponse.json({ evidence_item: mapEvidenceRow(updated) });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
@@ -105,8 +108,8 @@ export async function PATCH(
 }
 
 /**
- * P6-five-entities-delete-minimal: DELETE `/api/outcomes/[id]` — **204** on success.
- * Invalid `id` → **400**. No row → **404**. FK conflict → **409** (unexpected for CASCADE children).
+ * P6-five-entities-delete-minimal: DELETE `/api/evidence-items/[id]` — **204** on success.
+ * Invalid `id` → **400**. No row → **404**. FK conflict → **409**.
  */
 export async function DELETE(
   _request: Request,
@@ -121,17 +124,20 @@ export async function DELETE(
   const db = getDb();
   try {
     const deleted = await db
-      .delete(outcome)
-      .where(eq(outcome.id, id))
-      .returning({ id: outcome.id });
+      .delete(evidenceItem)
+      .where(eq(evidenceItem.id, id))
+      .returning({ id: evidenceItem.id });
     if (deleted.length === 0) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "evidence_item not found" },
+        { status: 404 },
+      );
     }
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     if (isPgForeignKeyViolation(err)) {
       return NextResponse.json(
-        { error: "cannot delete outcome: dependent rows exist" },
+        { error: "cannot delete evidence_item: dependent rows exist" },
         { status: 409 },
       );
     }

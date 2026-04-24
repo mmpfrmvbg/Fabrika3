@@ -7,7 +7,7 @@ import { acceptanceCriterion, outcome } from "@/db/schema";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UUID_RE =
+export const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const CRITERION_STATUSES = [
@@ -40,7 +40,7 @@ function isPgForeignKeyViolation(err: unknown): boolean {
   return /foreign key|violates foreign key/i.test(msg);
 }
 
-function mapAcceptanceCriterionRow(c: {
+export function mapAcceptanceCriterionRow(c: {
   id: string;
   outcomeId: string;
   code: string;

@@ -1,6 +1,8 @@
 /**
  * P6-scripted-smoke-five-apis — reproducible GET/POST smoke for five canonical APIs
- * plus minimal PATCH for outcome (title only): validation + read-back via GET list.
+ * plus minimal PATCH for project (name), outcome (title), assumption (description),
+ * acceptance_criterion (description), evidence_item (title), and minimal DELETE-by-id
+ * (**204** / **400** / **404**; optional **409** on sample project when RESTRICT blocks).
  *
  * From repo root (requires Node 20+ for --env-file):
  *   npm run dev
@@ -40,6 +42,9 @@ const SAMPLE_OUTCOME_TITLE = "Fabrika v1 sample outcome (P6 read)";
 async function fetchJson(url, init) {
   const res = await fetch(url, init);
   const text = await res.text();
+  if (res.status === 204 || text.length === 0) {
+    return { status: res.status, body: null };
+  }
   let body;
   try {
     body = JSON.parse(text);
@@ -103,6 +108,55 @@ async function main() {
     "GET projects by smoke slug: created project not found",
   );
   ok(`project GET+POST (new id ${newProjectId})`);
+
+  // --- project: PATCH (minimal name-only) + validation + GET read-back by slug ---
+  r = await fetchJson(`${base}/api/projects/not-a-uuid`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "should-not-apply" }),
+  });
+  assert(r.status === 400, `PATCH project invalid id expected 400, got ${r.status}`);
+
+  r = await fetchJson(
+    `${base}/api/projects/00000000-0000-4000-8000-000000000077`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "ghost" }),
+    },
+  );
+  assert(r.status === 404, `PATCH project unknown id expected 404, got ${r.status}`);
+
+  r = await fetchJson(`${base}/api/projects/${encodeURIComponent(newProjectId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "" }),
+  });
+  assert(r.status === 400, `PATCH project empty name expected 400, got ${r.status}`);
+
+  const patchedProjectName = `Smoke project patched ${runId}`;
+  r = await fetchJson(`${base}/api/projects/${encodeURIComponent(newProjectId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: patchedProjectName }),
+  });
+  assert(
+    r.status === 200,
+    `PATCH /api/projects/[id] expected 200, got ${r.status}: ${JSON.stringify(r.body)}`,
+  );
+  assert(
+    r.body?.project?.name === patchedProjectName,
+    "PATCH project response: project.name mismatch",
+  );
+
+  r = await fetchJson(`${base}/api/projects?slug=${encodeURIComponent(smokeSlug)}`);
+  assert(r.status === 200, `GET /api/projects?slug= after PATCH expected 200, got ${r.status}`);
+  const projAfter = r.body?.projects?.find((p) => p.id === newProjectId);
+  assert(
+    projAfter && projAfter.name === patchedProjectName,
+    "GET projects after PATCH: name not updated (slug read-back)",
+  );
+  ok(`project PATCH name (id ${newProjectId})`);
 
   // --- outcome: GET (sample) + POST + GET ---
   r = await fetchJson(
@@ -217,6 +271,63 @@ async function main() {
   );
   ok(`assumption GET+POST (new id ${newAssumptionId})`);
 
+  // --- assumption: PATCH (minimal description-only) + validation + GET read-back ---
+  r = await fetchJson(`${base}/api/assumptions/not-a-uuid`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description: "should-not-apply" }),
+  });
+  assert(r.status === 400, `PATCH assumption invalid id expected 400, got ${r.status}`);
+
+  r = await fetchJson(
+    `${base}/api/assumptions/00000000-0000-4000-8000-000000000066`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: "ghost" }),
+    },
+  );
+  assert(r.status === 404, `PATCH assumption unknown id expected 404, got ${r.status}`);
+
+  r = await fetchJson(
+    `${base}/api/assumptions/${encodeURIComponent(newAssumptionId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: "" }),
+    },
+  );
+  assert(r.status === 400, `PATCH assumption empty description expected 400, got ${r.status}`);
+
+  const patchedAssumptionDesc = `smoke-assumption-patched-${runId}`;
+  r = await fetchJson(
+    `${base}/api/assumptions/${encodeURIComponent(newAssumptionId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: patchedAssumptionDesc }),
+    },
+  );
+  assert(
+    r.status === 200,
+    `PATCH /api/assumptions/[id] expected 200, got ${r.status}: ${JSON.stringify(r.body)}`,
+  );
+  assert(
+    r.body?.assumption?.description === patchedAssumptionDesc,
+    "PATCH response: assumption.description mismatch",
+  );
+
+  r = await fetchJson(
+    `${base}/api/assumptions?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(r.status === 200, `GET /api/assumptions after PATCH expected 200, got ${r.status}`);
+  const asAfter = r.body?.assumptions?.find((a) => a.id === newAssumptionId);
+  assert(
+    asAfter && asAfter.description === patchedAssumptionDesc,
+    "GET assumptions after PATCH: description not updated",
+  );
+  ok(`assumption PATCH description (id ${newAssumptionId})`);
+
   // --- acceptance_criterion: GET + POST + GET ---
   r = await fetchJson(
     `${base}/api/acceptance-criteria?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
@@ -251,6 +362,69 @@ async function main() {
   );
   ok(`acceptance_criterion GET+POST (new id ${newAcId})`);
 
+  // --- acceptance_criterion: PATCH (description-only) + validation + GET read-back ---
+  r = await fetchJson(`${base}/api/acceptance-criteria/not-a-uuid`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description: "should-not-apply" }),
+  });
+  assert(
+    r.status === 400,
+    `PATCH acceptance-criterion invalid id expected 400, got ${r.status}`,
+  );
+
+  r = await fetchJson(
+    `${base}/api/acceptance-criteria/00000000-0000-4000-8000-000000000055`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: "ghost" }),
+    },
+  );
+  assert(
+    r.status === 404,
+    `PATCH acceptance-criterion unknown id expected 404, got ${r.status}`,
+  );
+
+  r = await fetchJson(`${base}/api/acceptance-criteria/${encodeURIComponent(newAcId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description: "" }),
+  });
+  assert(
+    r.status === 400,
+    `PATCH acceptance-criterion empty description expected 400, got ${r.status}`,
+  );
+
+  const patchedAcDesc = `Smoke AC patched ${runId}`;
+  r = await fetchJson(`${base}/api/acceptance-criteria/${encodeURIComponent(newAcId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description: patchedAcDesc }),
+  });
+  assert(
+    r.status === 200,
+    `PATCH /api/acceptance-criteria/[id] expected 200, got ${r.status}: ${JSON.stringify(r.body)}`,
+  );
+  assert(
+    r.body?.acceptance_criterion?.description === patchedAcDesc,
+    "PATCH response: acceptance_criterion.description mismatch",
+  );
+
+  r = await fetchJson(
+    `${base}/api/acceptance-criteria?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(
+    r.status === 200,
+    `GET /api/acceptance-criteria after PATCH expected 200, got ${r.status}`,
+  );
+  const acAfter = r.body?.acceptance_criteria?.find((c) => c.id === newAcId);
+  assert(
+    acAfter && acAfter.description === patchedAcDesc,
+    "GET acceptance-criteria after PATCH: description not updated",
+  );
+  ok(`acceptance_criterion PATCH description (id ${newAcId})`);
+
   // --- evidence_item: GET + POST + GET ---
   r = await fetchJson(
     `${base}/api/evidence-items?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
@@ -284,6 +458,205 @@ async function main() {
     "GET evidence-items: POSTed row not listed",
   );
   ok(`evidence_item GET+POST (new id ${newEvId})`);
+
+  // --- evidence_item: PATCH (title-only) + validation + GET read-back ---
+  r = await fetchJson(`${base}/api/evidence-items/not-a-uuid`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "should-not-apply" }),
+  });
+  assert(
+    r.status === 400,
+    `PATCH evidence-item invalid id expected 400, got ${r.status}`,
+  );
+
+  r = await fetchJson(
+    `${base}/api/evidence-items/00000000-0000-4000-8000-000000000044`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "ghost" }),
+    },
+  );
+  assert(
+    r.status === 404,
+    `PATCH evidence-item unknown id expected 404, got ${r.status}`,
+  );
+
+  r = await fetchJson(`${base}/api/evidence-items/${encodeURIComponent(newEvId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "" }),
+  });
+  assert(
+    r.status === 400,
+    `PATCH evidence-item empty title expected 400, got ${r.status}`,
+  );
+
+  const patchedEvTitle = `smoke-evidence-patched-${runId}`;
+  r = await fetchJson(`${base}/api/evidence-items/${encodeURIComponent(newEvId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: patchedEvTitle }),
+  });
+  assert(
+    r.status === 200,
+    `PATCH /api/evidence-items/[id] expected 200, got ${r.status}: ${JSON.stringify(r.body)}`,
+  );
+  assert(
+    r.body?.evidence_item?.title === patchedEvTitle,
+    "PATCH response: evidence_item.title mismatch",
+  );
+
+  r = await fetchJson(
+    `${base}/api/evidence-items?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(
+    r.status === 200,
+    `GET /api/evidence-items after PATCH expected 200, got ${r.status}`,
+  );
+  const evAfter = r.body?.evidence_items?.find((e) => e.id === newEvId);
+  assert(
+    evAfter && evAfter.title === patchedEvTitle,
+    "GET evidence-items after PATCH: title not updated",
+  );
+  ok(`evidence_item PATCH title (id ${newEvId})`);
+
+  // --- DELETE (minimal by-id): 400 / 404, then FK-safe order on disposable ids ---
+  r = await fetchJson(`${base}/api/evidence-items/not-a-uuid`, { method: "DELETE" });
+  assert(
+    r.status === 400,
+    `DELETE evidence-item invalid id expected 400, got ${r.status}`,
+  );
+  r = await fetchJson(
+    `${base}/api/evidence-items/00000000-0000-4000-8000-000000000044`,
+    { method: "DELETE" },
+  );
+  assert(
+    r.status === 404,
+    `DELETE evidence-item unknown id expected 404, got ${r.status}`,
+  );
+  r = await fetchJson(`${base}/api/evidence-items/${encodeURIComponent(newEvId)}`, {
+    method: "DELETE",
+  });
+  assert(
+    r.status === 204,
+    `DELETE /api/evidence-items/[id] expected 204, got ${r.status}`,
+  );
+  r = await fetchJson(
+    `${base}/api/evidence-items?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(
+    r.status === 200,
+    `GET evidence-items after DELETE expected 200, got ${r.status}`,
+  );
+  assert(
+    !r.body?.evidence_items?.some((e) => e.id === newEvId),
+    "GET evidence-items: deleted evidence_item still listed",
+  );
+  ok(`evidence_item DELETE (id ${newEvId})`);
+
+  r = await fetchJson(`${base}/api/acceptance-criteria/not-a-uuid`, { method: "DELETE" });
+  assert(
+    r.status === 400,
+    `DELETE acceptance-criterion invalid id expected 400, got ${r.status}`,
+  );
+  r = await fetchJson(
+    `${base}/api/acceptance-criteria/00000000-0000-4000-8000-000000000055`,
+    { method: "DELETE" },
+  );
+  assert(
+    r.status === 404,
+    `DELETE acceptance-criterion unknown id expected 404, got ${r.status}`,
+  );
+  r = await fetchJson(`${base}/api/acceptance-criteria/${encodeURIComponent(newAcId)}`, {
+    method: "DELETE",
+  });
+  assert(
+    r.status === 204,
+    `DELETE /api/acceptance-criteria/[id] expected 204, got ${r.status}`,
+  );
+  r = await fetchJson(
+    `${base}/api/acceptance-criteria?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(
+    !r.body?.acceptance_criteria?.some((c) => c.id === newAcId),
+    "GET acceptance-criteria: deleted row still listed",
+  );
+  ok(`acceptance_criterion DELETE (id ${newAcId})`);
+
+  r = await fetchJson(`${base}/api/assumptions/not-a-uuid`, { method: "DELETE" });
+  assert(r.status === 400, `DELETE assumption invalid id expected 400, got ${r.status}`);
+  r = await fetchJson(
+    `${base}/api/assumptions/00000000-0000-4000-8000-000000000066`,
+    { method: "DELETE" },
+  );
+  assert(r.status === 404, `DELETE assumption unknown id expected 404, got ${r.status}`);
+  r = await fetchJson(`${base}/api/assumptions/${encodeURIComponent(newAssumptionId)}`, {
+    method: "DELETE",
+  });
+  assert(r.status === 204, `DELETE /api/assumptions/[id] expected 204, got ${r.status}`);
+  r = await fetchJson(
+    `${base}/api/assumptions?outcome_id=${encodeURIComponent(sampleOutcomeId)}`,
+  );
+  assert(
+    !r.body?.assumptions?.some((a) => a.id === newAssumptionId),
+    "GET assumptions: deleted assumption still listed",
+  );
+  ok(`assumption DELETE (id ${newAssumptionId})`);
+
+  r = await fetchJson(`${base}/api/outcomes/not-a-uuid`, { method: "DELETE" });
+  assert(r.status === 400, `DELETE outcome invalid id expected 400, got ${r.status}`);
+  r = await fetchJson(
+    `${base}/api/outcomes/00000000-0000-4000-8000-000000000099`,
+    { method: "DELETE" },
+  );
+  assert(r.status === 404, `DELETE outcome unknown id expected 404, got ${r.status}`);
+  r = await fetchJson(`${base}/api/outcomes/${encodeURIComponent(newOutcomeId)}`, {
+    method: "DELETE",
+  });
+  assert(r.status === 204, `DELETE /api/outcomes/[id] expected 204, got ${r.status}`);
+  r = await fetchJson(
+    `${base}/api/outcomes?project_id=${encodeURIComponent(sampleProjectId)}`,
+  );
+  assert(
+    !r.body?.outcomes?.some((o) => o.id === newOutcomeId),
+    "GET outcomes: deleted outcome still listed",
+  );
+  ok(`outcome DELETE (id ${newOutcomeId})`);
+
+  r = await fetchJson(`${base}/api/projects/not-a-uuid`, { method: "DELETE" });
+  assert(r.status === 400, `DELETE project invalid id expected 400, got ${r.status}`);
+  r = await fetchJson(
+    `${base}/api/projects/00000000-0000-4000-8000-000000000077`,
+    { method: "DELETE" },
+  );
+  assert(r.status === 404, `DELETE project unknown id expected 404, got ${r.status}`);
+  r = await fetchJson(`${base}/api/projects/${encodeURIComponent(newProjectId)}`, {
+    method: "DELETE",
+  });
+  assert(r.status === 204, `DELETE /api/projects/[id] expected 204, got ${r.status}`);
+  r = await fetchJson(`${base}/api/projects?slug=${encodeURIComponent(smokeSlug)}`);
+  assert(
+    !r.body?.projects?.some((p) => p.id === newProjectId),
+    "GET projects: deleted smoke project still listed",
+  );
+  ok(`project DELETE (id ${newProjectId})`);
+
+  // RESTRICT on project ← outcome: deleting sample project with outcomes must be **409**
+  r = await fetchJson(`${base}/api/projects/${encodeURIComponent(sampleProjectId)}`, {
+    method: "DELETE",
+  });
+  assert(
+    r.status === 409,
+    `DELETE sample project with dependent outcomes expected 409, got ${r.status}: ${JSON.stringify(r.body)}`,
+  );
+  r = await fetchJson(`${base}/api/projects?slug=${encodeURIComponent(SAMPLE_SLUG)}`);
+  assert(
+    r.status === 200 && r.body?.projects?.some((p) => p.id === sampleProjectId),
+    "GET sample project after blocked DELETE: baseline row missing",
+  );
+  ok("project DELETE blocked (409) on sample project with outcomes");
 
   console.log("[smoke-api-five-entities] All five entities passed.");
   console.log(

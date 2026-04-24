@@ -8,6 +8,9 @@ import { project } from "@/db/schema";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+export const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const PROJECT_STATUSES = ["active", "archived"] as const;
 type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
@@ -33,7 +36,7 @@ function isPgUniqueViolation(err: unknown): boolean {
   return /duplicate key|unique constraint/i.test(msg);
 }
 
-function mapProjectRow(p: {
+export function mapProjectRow(p: {
   id: string;
   name: string;
   slug: string | null;

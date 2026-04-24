@@ -2,29 +2,28 @@
 
 ## Single Next Step
 
-- title: **`P6-project-patch-minimal`**: добавить **`app/api/projects/[id]/route.ts`** с **`PATCH`**: JSON body **строго** **`{ "name": "<non-empty string>" }`** (другие ключи → **`400`**); **`id`** в path не UUID → **`400`**; проект не найден → **`404`**; успех → **`200`** **`{ project: … }`** в том же snake_case, что **`GET /api/projects`** (включая **`updated_at`** через Drizzle **`set({ name, updatedAt: new Date() })`**). Расширить **`scripts/smoke-api-five-entities.mjs`**: после блока **POST project** — **PATCH** невалидный id (**`400`**), неизвестный UUID (**`404`**), пустой **`name`** (**`400`**), валидный **PATCH** + **GET ?slug=** read-back. Прогнать **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** и **`npm run dev`** + **`npm run smoke:api-five -- http://127.0.0.1:<port>`** (или документировать blocker). Обновить **`DOCS/STATUS.md`** (evidence). **Не** трогать **`DELETE`**, **`AGENTS.md`**, **`.mdc`**, **`MASTER`**, **`DECISIONS`** (если нет нового решения), **`README`** — только если текст smoke снова расходится с фактом.
+- title: **`P7-app-shell-7-1-minimal`**: по **`MASTER` §7.1** + **`DOCS/UI_V1.md`** реализовать **минимальный** глобальный shell: левая навигация (плейсхолдер-ссылки на разделы из §7.1) + верхняя полоса статуса (статический текст фазы / «prototype»); **без** реальных данных из API, **без** новых сущностей вне **`UI_V1`**, **без** смены **`MASTER`** за пределом evidence в **`STATUS`**; после — **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** и короткая ручная проверка в браузере; обновить **`DOCS/STATUS.md`**
 - owner: cursor
 - type: implementation
 - priority: high
 
 ## Why This Is The Next Step
 
-- Симметрично **`P6-outcome-patch-minimal`**: второй canonical **Update** path для **`project`** без расширения на остальные сущности.
+- **Фаза 6** закрыта по HTTP+DB канону; следующий последовательный блок в **`MASTER`** — **§7 app shell**.
 
 ## Input Needed
 
-- **`app/api/projects/route.ts`** (контракт **`GET`/`POST`**, маппер строки) и **`db/schema.ts`** (**`project`**).
+- **`DOCS/MASTER_TODO_CURSOR.md` §7.1–§7.2**, **`DOCS/UI_V1.md`**, текущий **`app/layout.tsx`** / **`app/page.tsx`**.
 
 ## Exact Action
 
-- Один новый route handler + точечное расширение smoke + **`STATUS`**.
+- Один сфокусированный PR по layout/nav (или два файла + минимальные компоненты), затем toolchain + **`STATUS`**.
 
 ## Definition of Done
 
-- [ ] **`PATCH /api/projects/[id]`** + smoke-assertions + toolchain **exit 0** (или честный **blocked** в **`STATUS`**).
-- [ ] **`STATUS.md`** / **`NEXT_STEP.md`** обновлены.
+- [ ] В браузере виден **nav + top bar** по заявленному минимуму; **`STATUS`** содержит evidence.
 
 ## If Blocked
 
-- fallback: Зафиксировать в **`STATUS`** отсутствие **`DATABASE_URL`** / dev как blocker для smoke-only части; код **`PATCH`** всё равно должен проходить **`typecheck`/`build`**.
-- escalate_to_user_if: Политика репо запрещает **PATCH** для **`project`**.
+- fallback: зафиксировать в **`STATUS`** **blocked**, если дизайн shell противоречит **`UI_V1`** без правки scope.
+- escalate_to_user_if: Владелец запрещает любой UI до другой фазы.

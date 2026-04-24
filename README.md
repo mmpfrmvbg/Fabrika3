@@ -66,9 +66,9 @@ From the repository root, in order:
 
 **Sample data (phase 6):** after migrations, `npm run db:seed:sample-project` inserts **one** canonical `project` row (idempotent slug `fabrika-v1-sample`; see `scripts/seed-sample-project.mjs` and `DOCS/STATUS.md`).
 
-### Five-entity API smoke (phase-6 C+R + minimal outcome update)
+### Five-entity API smoke (phase-6 C+R + minimal PATCH + minimal DELETE)
 
-Reproducible check that the five canonical collection routes (`/api/projects`, `/api/outcomes`, …) can **read** and **create** rows against a real Postgres DB, plus **one** minimal **update** path: **`PATCH /api/outcomes/[id]`** (title only). Script: `scripts/smoke-api-five-entities.mjs`.
+Reproducible check that the five canonical collection routes (`/api/projects`, `/api/outcomes`, …) can **read** and **create** rows against a real Postgres DB, plus minimal **one-field `PATCH`** paths (see below) and minimal **`DELETE /api/.../[id]`** handlers (**`204`** on success, **`400`** / **`404`**, and **`409`** when the DB reports a foreign-key / RESTRICT conflict as in the shipped migration). Script: `scripts/smoke-api-five-entities.mjs`.
 
 **Prerequisites**
 
@@ -92,11 +92,15 @@ npm run smoke:api-five -- http://127.0.0.1:<port>
 
 - Runs the sample seed path (`scripts/seed-sample-project.mjs` via the script).
 - For each of the **five** entities: **GET → POST → GET** with minimal assertions (HTTP success and created `id` visible on read).
-- For **`outcome`** only: **`PATCH /api/outcomes/[id]`** with **`{ "title": "…" }`** (invalid id → **400**, unknown id → **404**, empty title → **400**), then **GET `/api/outcomes?project_id=…`** read-back of the updated title.
+- For **`project`**: **`PATCH /api/projects/[id]`** with **`{ "name": "…" }`** (invalid id → **400**, unknown id → **404**, empty name → **400**), then **GET `/api/projects?slug=…`** read-back of the updated name (slug unchanged).
+- For **`outcome`**: **`PATCH /api/outcomes/[id]`** with **`{ "title": "…" }`** (invalid id → **400**, unknown id → **404**, empty title → **400**), then **GET `/api/outcomes?project_id=…`** read-back of the updated title.
+- For **`assumption`**: **`PATCH /api/assumptions/[id]`** with **`{ "description": "…" }`** (invalid id → **400**, unknown id → **404**, empty description → **400**), then **GET `/api/assumptions?outcome_id=…`** read-back of the updated description.
+- For **`acceptance_criterion`**: **`PATCH /api/acceptance-criteria/[id]`** with **`{ "description": "…" }`** (invalid id → **400**, unknown id → **404**, empty description → **400**), then **GET `/api/acceptance-criteria?outcome_id=…`** read-back of the updated description.
+- For **`evidence_item`**: **`PATCH /api/evidence-items/[id]`** with **`{ "title": "…" }`** (invalid id → **400**, unknown id → **404**, empty title → **400**), then **GET `/api/evidence-items?outcome_id=…`** read-back of the updated title.
+- For **each of the five** entities: **`DELETE /api/.../[id]`** — invalid id → **400**, unknown id → **404**, successful delete of the disposable rows created in the same run → **`204`**, then **GET** with the same filter used after **POST** (list **must not** include the deleted **`id`**). For **`project`**: an extra **`DELETE`** against the seeded sample project while **`outcome`** rows still reference it → **`409`** when the DB enforces **`ON DELETE RESTRICT`** as in this repo; the sample row at **`slug=fabrika-v1-sample`** must remain for later runs.
 
 **What this does *not* verify**
 
-- **Update** routes for entities other than **`outcome`**, or **any** **`DELETE`** routes.
 - **UI** or browser flows.
 - **Release readiness** or governance labels beyond “API + DB respond as expected”.
 

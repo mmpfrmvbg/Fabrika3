@@ -2,10 +2,10 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
-import { outcome } from "@/db/schema";
+import { project } from "@/db/schema";
 import { isPgForeignKeyViolation } from "@/lib/is-pg-foreign-key-violation";
 
-import { mapOutcomeRow, UUID_RE } from "../route";
+import { mapProjectRow, UUID_RE } from "../route";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +15,8 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 /**
- * P6-outcome-patch-minimal: PATCH `/api/outcomes/[id]` — body `{ "title": "<non-empty>" }` only.
- * Invalid `id` (not UUID) → **400**. Unknown outcome → **404**. Missing/empty `title` → **400**.
+ * P6-project-patch-minimal: PATCH `/api/projects/[id]` — body `{ "name": "<non-empty>" }` only.
+ * Invalid `id` (not UUID) → **400**. Unknown project → **404**. Missing/empty `name` → **400**.
  */
 export async function PATCH(
   request: Request,
@@ -47,27 +47,27 @@ export async function PATCH(
     }
 
     const keys = Object.keys(body);
-    if (keys.length !== 1 || keys[0] !== "title") {
+    if (keys.length !== 1 || keys[0] !== "name") {
       return NextResponse.json(
         {
           error:
-            'request body must be a JSON object with only the "title" property',
+            'request body must be a JSON object with only the "name" property',
         },
         { status: 400 },
       );
     }
 
-    const titleRaw = body.title;
-    if (typeof titleRaw !== "string") {
+    const nameRaw = body.name;
+    if (typeof nameRaw !== "string") {
       return NextResponse.json(
-        { error: "title must be a non-empty string" },
+        { error: "name must be a non-empty string" },
         { status: 400 },
       );
     }
-    const title = titleRaw.trim();
-    if (!title) {
+    const name = nameRaw.trim();
+    if (!name) {
       return NextResponse.json(
-        { error: "title must be a non-empty string" },
+        { error: "name must be a non-empty string" },
         { status: 400 },
       );
     }
@@ -76,18 +76,18 @@ export async function PATCH(
 
     const [existing] = await db
       .select()
-      .from(outcome)
-      .where(eq(outcome.id, id))
+      .from(project)
+      .where(eq(project.id, id))
       .limit(1);
 
     if (!existing) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json({ error: "project not found" }, { status: 404 });
     }
 
     const [updated] = await db
-      .update(outcome)
-      .set({ title, updatedAt: new Date() })
-      .where(eq(outcome.id, id))
+      .update(project)
+      .set({ name, updatedAt: new Date() })
+      .where(eq(project.id, id))
       .returning();
 
     if (!updated) {
@@ -97,7 +97,7 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ outcome: mapOutcomeRow(updated) });
+    return NextResponse.json({ project: mapProjectRow(updated) });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
@@ -105,8 +105,8 @@ export async function PATCH(
 }
 
 /**
- * P6-five-entities-delete-minimal: DELETE `/api/outcomes/[id]` — **204** on success.
- * Invalid `id` → **400**. No row → **404**. FK conflict → **409** (unexpected for CASCADE children).
+ * P6-five-entities-delete-minimal: DELETE `/api/projects/[id]` — **204** on success.
+ * Invalid `id` → **400**. No row → **404**. FK restrict (e.g. outcomes) → **409**.
  */
 export async function DELETE(
   _request: Request,
@@ -121,17 +121,17 @@ export async function DELETE(
   const db = getDb();
   try {
     const deleted = await db
-      .delete(outcome)
-      .where(eq(outcome.id, id))
-      .returning({ id: outcome.id });
+      .delete(project)
+      .where(eq(project.id, id))
+      .returning({ id: project.id });
     if (deleted.length === 0) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json({ error: "project not found" }, { status: 404 });
     }
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     if (isPgForeignKeyViolation(err)) {
       return NextResponse.json(
-        { error: "cannot delete outcome: dependent rows exist" },
+        { error: "cannot delete project: dependent rows exist" },
         { status: 409 },
       );
     }

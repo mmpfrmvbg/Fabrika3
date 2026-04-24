@@ -2,10 +2,10 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
-import { outcome } from "@/db/schema";
+import { acceptanceCriterion } from "@/db/schema";
 import { isPgForeignKeyViolation } from "@/lib/is-pg-foreign-key-violation";
 
-import { mapOutcomeRow, UUID_RE } from "../route";
+import { mapAcceptanceCriterionRow, UUID_RE } from "../route";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +15,9 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 /**
- * P6-outcome-patch-minimal: PATCH `/api/outcomes/[id]` — body `{ "title": "<non-empty>" }` only.
- * Invalid `id` (not UUID) → **400**. Unknown outcome → **404**. Missing/empty `title` → **400**.
+ * P6-acceptance-criterion-patch-minimal: PATCH `/api/acceptance-criteria/[id]` —
+ * body `{ "description": "<non-empty>" }` only.
+ * Invalid `id` → **400**. Unknown row → **404**. Missing/empty `description` → **400**.
  */
 export async function PATCH(
   request: Request,
@@ -47,27 +48,27 @@ export async function PATCH(
     }
 
     const keys = Object.keys(body);
-    if (keys.length !== 1 || keys[0] !== "title") {
+    if (keys.length !== 1 || keys[0] !== "description") {
       return NextResponse.json(
         {
           error:
-            'request body must be a JSON object with only the "title" property',
+            'request body must be a JSON object with only the "description" property',
         },
         { status: 400 },
       );
     }
 
-    const titleRaw = body.title;
-    if (typeof titleRaw !== "string") {
+    const descRaw = body.description;
+    if (typeof descRaw !== "string") {
       return NextResponse.json(
-        { error: "title must be a non-empty string" },
+        { error: "description must be a non-empty string" },
         { status: 400 },
       );
     }
-    const title = titleRaw.trim();
-    if (!title) {
+    const description = descRaw.trim();
+    if (!description) {
       return NextResponse.json(
-        { error: "title must be a non-empty string" },
+        { error: "description must be a non-empty string" },
         { status: 400 },
       );
     }
@@ -76,18 +77,21 @@ export async function PATCH(
 
     const [existing] = await db
       .select()
-      .from(outcome)
-      .where(eq(outcome.id, id))
+      .from(acceptanceCriterion)
+      .where(eq(acceptanceCriterion.id, id))
       .limit(1);
 
     if (!existing) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "acceptance_criterion not found" },
+        { status: 404 },
+      );
     }
 
     const [updated] = await db
-      .update(outcome)
-      .set({ title, updatedAt: new Date() })
-      .where(eq(outcome.id, id))
+      .update(acceptanceCriterion)
+      .set({ description, updatedAt: new Date() })
+      .where(eq(acceptanceCriterion.id, id))
       .returning();
 
     if (!updated) {
@@ -97,7 +101,9 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ outcome: mapOutcomeRow(updated) });
+    return NextResponse.json({
+      acceptance_criterion: mapAcceptanceCriterionRow(updated),
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
@@ -105,8 +111,8 @@ export async function PATCH(
 }
 
 /**
- * P6-five-entities-delete-minimal: DELETE `/api/outcomes/[id]` — **204** on success.
- * Invalid `id` → **400**. No row → **404**. FK conflict → **409** (unexpected for CASCADE children).
+ * P6-five-entities-delete-minimal: DELETE `/api/acceptance-criteria/[id]` — **204** on success.
+ * Invalid `id` → **400**. No row → **404**. FK conflict → **409**.
  */
 export async function DELETE(
   _request: Request,
@@ -121,17 +127,20 @@ export async function DELETE(
   const db = getDb();
   try {
     const deleted = await db
-      .delete(outcome)
-      .where(eq(outcome.id, id))
-      .returning({ id: outcome.id });
+      .delete(acceptanceCriterion)
+      .where(eq(acceptanceCriterion.id, id))
+      .returning({ id: acceptanceCriterion.id });
     if (deleted.length === 0) {
-      return NextResponse.json({ error: "outcome not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "acceptance_criterion not found" },
+        { status: 404 },
+      );
     }
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     if (isPgForeignKeyViolation(err)) {
       return NextResponse.json(
-        { error: "cannot delete outcome: dependent rows exist" },
+        { error: "cannot delete acceptance_criterion: dependent rows exist" },
         { status: 409 },
       );
     }
