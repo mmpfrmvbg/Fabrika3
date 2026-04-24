@@ -8,8 +8,8 @@
 - updated_at: 2026-04-24
 
 ## Current Task
-- id: P6-seed-one-sample-project
-- title: Seed **ровно одного** sample **`project`** в реальную БД по канону **`DATA_MODEL_V1`** / **`MASTER` §6.3** — см. **`NEXT_STEP.md`**
+- id: P6-project-read-minimal
+- title: Минимальный **read** для **`project`** через **`getDb()`** + Drizzle (**`GET /api/projects`**) — см. **`NEXT_STEP.md`**
 - status: verified
 - linked_phase: 6
 
@@ -66,9 +66,10 @@
 - **P6-drizzle-v1-schema-migration:** реализованы пять таблиц и enum’ы в **`db/schema.ts`** по **`DATA_MODEL_V1.md`**; сгенерирована **одна** миграция **`db/migrations/0000_*.sql`** (+ meta); индексы/FK как в каноне (**RESTRICT** project→outcome, **CASCADE** outcome→дети); **`README` / app / templates / AGENTS / .mdc** не менялись. **`DECISIONS.md`** — **DEC-005** (uuid PK).
 - **Применение миграции к БД (2026-04-22):** **`npm run db:migrate`** с валидным **`DATABASE_URL`** (Postgres **`localhost:5665`**, БД **`fabrika`**) — **успех**, см. критерий фазы 6 выше.
 - **P6-seed-one-sample-project (2026-04-24):** добавлен **`scripts/seed-sample-project.mjs`** + **`npm run db:seed:sample-project`**; в БД **`fabrika`** вставлен **один** `project` (slug **`fabrika-v1-sample`**, статус **`active`**); повторный запуск скрипта подтвердил идемпотентность (**`OK: sample project already exists`**). **`README`** — одна строка про seed-команду.
+- **P6-project-read-minimal (2026-04-24):** добавлен **`app/api/projects/route.ts`** — **`GET /api/projects`** (лимит 50) и **`GET /api/projects?slug=…`**; **`runtime = nodejs`**, **`dynamic = force-dynamic`**; ответ JSON **`{ projects: [{ id, name, slug, status, created_at, updated_at }] }`** (имплементационные snake_case для времени). Проверка: **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** — успех; **`npm run dev`** (порт **3011**) + **`curl.exe`** к **`/api/projects?slug=fabrika-v1-sample`** вернул sample-строку с **`id`** **`a1438677-0879-457e-bb19-363da9986dbb`**.
 
 ## What Is In Progress
-- item: **Фаза 6** — миграция и **seed одного `project`** выполнены; дальше **CRUD** по пяти сущностям **`DATA_MODEL_V1`** (**`MASTER` §6** Definition of done) — см. **`NEXT_STEP.md`**.
+- item: **Фаза 6** — есть **read** для **`project`** через стек приложения; дальше инкременты **CRUD** по канону (**следующий узкий шаг** — см. **`NEXT_STEP.md`**) до закрытия **`MASTER` §6** Definition of done.
 
 ## What Is Blocked
 - item: нет
@@ -93,7 +94,7 @@
 ## Current Product State
 - maturity: prototype
 - release_readiness: no
-- evidence_state: фаза 3: локальные **`npm ci`**, **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** (см. RB-3.3-clean-bootstrap); MASTER §3.1–§3.3 согласован с репозиторием. **P6-drizzle-v1-schema-migration (2026-04-23):** повторно пройдены **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** — успех. **Применение миграции (2026-04-22):** **`npm run db:migrate`** к Postgres **`localhost:5665`**, БД **`fabrika`** — **`migrations applied successfully!`** (Drizzle Kit). **P6-seed-one-sample-project (2026-04-24):** **`npm run db:seed:sample-project`** — вставка `project` + **`OK: inserted sample project`** с **`id`** UUID; повторный запуск — **`OK: sample project already exists`** (идемпотентность).
+- evidence_state: фаза 3: локальные **`npm ci`**, **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** (см. RB-3.3-clean-bootstrap); MASTER §3.1–§3.3 согласован с репозиторием. **P6-drizzle-v1-schema-migration (2026-04-23):** повторно пройдены **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** — успех. **Применение миграции (2026-04-22):** **`npm run db:migrate`** к Postgres **`localhost:5665`**, БД **`fabrika`** — **`migrations applied successfully!`** (Drizzle Kit). **P6-seed-one-sample-project (2026-04-24):** **`npm run db:seed:sample-project`** — вставка `project` + **`OK: inserted sample project`** с **`id`** UUID; повторный запуск — **`OK: sample project already exists`** (идемпотентность). **P6-project-read-minimal (2026-04-24):** см. **What Was Completed** — цепочка **`typecheck` / `lint` / `test` / `build`** + smoke **`curl`** к **`GET /api/projects?slug=fabrika-v1-sample`** при **`npm run dev`**.
 - db_schema_state: в **`db/schema.ts`** — **5 / 5** таблиц **`DATA_MODEL_V1`**; в целевой БД **`fabrika`** применена миграция **`0000_sparkling_fixer`**; в таблице **`project`** есть **ровно один** sample-ряд (**slug** `fabrika-v1-sample`, **status** `active`); **`_fabrika_bootstrap_probe`** не входит в каноническую схему
 - active_outcome: v1 governed product-to-code (см. MASTER_TODO §2)
 
@@ -104,7 +105,8 @@
 - `DOCS/templates/*.md`, `DOCS/MASTER_TODO_CURSOR.md`, `DOCS/INDEX.md`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P5-5.3-templates**)*  
 - `DOCS/MASTER_TODO_CURSOR.md`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P6-read-master-from-section-6**)* 
 - `db/schema.ts`, `db/migrations/*` *(**P6-drizzle-v1-schema-migration**)*  
-- `scripts/seed-sample-project.mjs`, `package.json` *(**P6-seed-one-sample-project**)*; **`README.md`** *(одна строка про seed)*
+- `scripts/seed-sample-project.mjs`, `package.json` *(**P6-seed-one-sample-project**)*; **`README.md`** *(одна строка про seed)*  
+- `app/api/projects/route.ts` *(**P6-project-read-minimal**)*; **`README.md`** *(кратко про smoke API)*
 
 ## Notes
 - **Форматирование (format):** Prettier **намеренно отложен** (см. предыдущие Notes).
@@ -114,3 +116,4 @@
 - **`_fabrika_bootstrap_probe` (после `P6-drizzle-v1-schema-migration`):** удалён из **`db/schema.ts`** — больше не нужен: есть реальные v1-таблицы и поверхность для Drizzle Kit. В **единственной** миграции в начале добавлено **`DROP TABLE IF EXISTS "_fabrika_bootstrap_probe"`** для БД, где проба уже создавалась вручную/`push`.
 - **`db:migrate` (2026-04-22):** после передачи валидного **`DATABASE_URL`** миграция **`0000_sparkling_fixer`** применена к БД **`fabrika`** (**`localhost:5665`**). **Безопасность:** пароль из чата / **`.env.local`** не копировать в **`STATUS`** и не коммитить; при утечке строки подключения — **сменить пароль** в Postgres.
 - **Seed sample `project` (2026-04-24):** метод — **`npm run db:seed:sample-project`** → **`node scripts/seed-sample-project.mjs`**; читает только **`DATABASE_URL`**; **идемпотентность** по **`slug = 'fabrika-v1-sample'`**; **не** создаёт outcome / assumption / acceptance_criterion / evidence_item. UUID вставленной строки зафиксирован в логе выполнения (**`a1438677-0879-457e-bb19-363da9986dbb`** на момент прогона) — для сверки в БД без раскрытия секретов.
+- **Read `project` (2026-04-24):** **`GET /api/projects`** / **`GET /api/projects?slug=fabrika-v1-sample`** — smoke: **`npm run dev`**, затем например **`curl.exe "http://127.0.0.1:<port>/api/projects?slug=fabrika-v1-sample"`** при валидном **`.env.local`** (**`DATABASE_URL`**). **Не** CUD и **не** `outcome` в этом шаге.

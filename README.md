@@ -85,6 +85,8 @@ npm run test:e2e    # Playwright smoke (starts `npm run dev` via webServer; syst
 npm run db:generate # Drizzle: emit SQL from ./db/schema.ts → ./db/migrations (needs env; see Drizzle docs)
 npm run db:migrate  # Drizzle: apply migrations (requires DATABASE_URL and a reachable Postgres)
 npm run db:seed:sample-project  # Inserts one sample project row (requires DATABASE_URL + migrated schema)
+# With `npm run dev` and DATABASE_URL set, smoke-read sample project:
+# curl.exe "http://127.0.0.1:3000/api/projects?slug=fabrika-v1-sample"
 npm run build   # production build (Turbopack)
 npm run start   # run production server (after build)
 npm run lint    # ESLint (Next core-web-vitals + TypeScript)
