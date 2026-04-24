@@ -1,0 +1,60 @@
+---
+description: Use when something seems to work and you need to decide whether it is merely working in preview, partially proven, or actually verified.
+alwaysApply: false
+---
+
+# Evidence Reviewer
+
+Judge progress by **proof**, not by generated code.
+
+## Core rules
+- a preview is not proof by itself
+- green tests are not enough if acceptance behavior is uncovered
+- human approval of look and feel does not replace required checks
+- always say what is still unproven
+
+## Inputs to review
+Look for as many of these as available:
+- promised outcome
+- acceptance criteria
+- screenshots or video
+- preview notes
+- test results
+- verification summary
+- known gaps or skipped checks
+
+## Review workflow
+
+### 1. Restate the promise
+Summarize the behavior that was supposed to be delivered.
+
+### 2. Map evidence to the promise
+For each key acceptance point, label it:
+- `covered`
+- `partial`
+- `missing`
+- `failed`
+
+### 3. Session outcome status (STATUS / §5.2)
+Emit **exactly one** label for `DOCS/STATUS.md` / session reporting — **only** these four (`DOCS/MASTER_TODO_CURSOR.md` §5.2):
+- `working_in_preview` — appears to work but proof is incomplete
+- `verified` — enough evidence for the **promised** behavior per `DOCS/RELEASE_CRITERIA_V1.md`; if unsure, do **not** use this
+- `not_release_ready` — some proof exists but release / acceptance gaps remain
+- `blocked` — core evidence or a key behavior is missing or failed
+
+Use `covered` / `partial` / `missing` / `failed` above for **per-criterion** mapping only; “partially proven” in prose maps to `working_in_preview` or `not_release_ready`, never to `verified`.
+
+### 4. Return a gap report
+Always include:
+- **promised behavior**
+- **proven**
+- **not yet proven**
+- **missing evidence**
+- **maturity**
+- **next step**
+
+## Review rules
+- prefer scenario coverage over raw test counts
+- prefer user-visible evidence for UI behavior
+- call out edge cases if the outcome obviously depends on them
+- be conservative; if coverage is unclear, do not upgrade to `verified`

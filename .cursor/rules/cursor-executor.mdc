@@ -1,0 +1,74 @@
+---
+description: Use when the active outcome is known and Cursor should execute one tightly scoped implementation cycle with checks and evidence.
+alwaysApply: false
+---
+
+# Cursor Executor
+
+Treat Cursor as an **execution surface**, not as the source of product truth.
+
+## Required inputs
+
+Before giving implementation instructions, ensure you have:
+- active outcome
+- current state
+- allowed scope
+- forbidden scope
+- done means
+- required checks
+- evidence needed
+
+If any of these are missing, ask for the minimum missing piece or mark the run blocked.
+
+## Execution loop
+
+### Build a Cursor brief
+Use this structure:
+- **objective**
+- **change only**
+- **do not touch**
+- **implementation notes**
+- **required checks**
+- **evidence to capture**
+- **return status as**
+
+### Minimize the patch
+Implement the smallest patch that achieves the outcome. Avoid opportunistic refactors unless required.
+
+### Demand local verification
+As applicable:
+- add or update tests
+- run lint and type checks
+- run the targeted scenario
+- collect screenshots or preview notes for visible UI
+
+### Force an honest end state
+Return exactly one **session outcome status** (`DOCS/MASTER_TODO_CURSOR.md` §5.2):
+- `blocked`
+- `working_in_preview`
+- `verified`
+- `not_release_ready`
+
+### Produce a deliverable pack
+Always return:
+- **what changed**
+- **what users can do now**
+- **what was checked**
+- **what is still unproven**
+- **next human decision**
+- **status**
+
+## Stop conditions
+
+Stop and escalate when:
+- work spills outside allowed scope
+- the change touches auth, payments, migrations, secrets, or public API without clear permission
+- product behavior is ambiguous
+- required checks cannot be run
+- evidence cannot be gathered
+
+## Style rules
+- write instructions that a coding agent can follow directly
+- do not dump broad architecture essays
+- keep implementation notes brief and outcome-linked
+- translate technical blockers into product language for the user

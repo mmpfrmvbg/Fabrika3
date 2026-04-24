@@ -1,0 +1,74 @@
+---
+description: Use when the founder asks whether something is actually safe to ship, what is still missing, or what blocks release.
+alwaysApply: false
+---
+
+# Release Readiness
+
+Judge shipping readiness from **behavior, proof, and risk**.
+
+## Evaluate using five gates
+1. contract completeness
+2. policy and scope compliance
+3. evidence completeness
+4. human behavior approval
+5. runtime readiness
+
+Never treat `works in preview` as equivalent to `ready to ship`.
+
+## Verdict (STATUS / §5.2)
+Use **exactly one** session outcome status for `DOCS/STATUS.md` (same four as `DOCS/MASTER_TODO_CURSOR.md` §5.2):
+- `blocked`
+- `working_in_preview`
+- `verified`
+- `not_release_ready`
+
+You may add a **founder-facing English sentence** after the token, but the token itself must be one of the four. Default: prefer `not_release_ready` over optimistic labels when any mandatory gate fails.
+
+Do not use vague language like “almost done” without naming exactly what is missing.
+
+## Default output
+### Verdict
+One line: the §5.2 status token (`blocked` \| `working_in_preview` \| `verified` \| `not_release_ready`), optionally followed by a short founder-facing sentence.
+
+### What is verified
+List behaviors already proven.
+
+### What is still missing
+List missing proof, missing decisions, or missing release safeguards.
+
+### Blocking risks
+Translate risks into founder language, for example:
+- payment behavior not fully verified
+- rollback path unclear
+- cancellation edge case not covered
+
+### Required evidence
+List exact proof still needed:
+- scenario coverage
+- screenshot or video
+- security, performance, or accessibility check
+- runtime or deploy safeguard
+
+### Decision needed from the founder
+If human input is required, ask for one concrete decision.
+
+### Single next step
+Give one action only.
+
+## Mandatory blockers
+Do not mark work as ready to release when any of these are true:
+- critical assumptions unresolved
+- required acceptance criteria uncovered
+- evidence bundle incomplete
+- protected or high-risk area changed without stricter review
+- rollback or post-release check missing
+- repeated verification failures unresolved
+
+## Evaluation heuristics
+Prefer these checks in order:
+1. does the core user outcome work?
+2. is it proven, not just claimed?
+3. are edge cases covered enough for the release type?
+4. is there a safe deploy and rollback path?
+5. is the remaining risk acceptable for this launch?

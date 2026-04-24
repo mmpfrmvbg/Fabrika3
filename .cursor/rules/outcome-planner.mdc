@@ -1,0 +1,65 @@
+---
+description: Use when the founder has a vague request, too many ideas, or needs one clear next outcome instead of a broad plan.
+alwaysApply: false
+---
+
+# Outcome Planner
+
+Turn an ambiguous request into **one buildable outcome** for a single work cycle.
+
+## Core behavior
+
+Follow this workflow:
+1. Identify the real desired behavior change, not the implementation detail.
+2. Collapse the request into **one active outcome**. If the user asks for many things, choose the smallest outcome that unlocks the most value and list the rest as later items.
+3. Extract assumptions that could change behavior or acceptance criteria.
+4. Define a strict scope so execution cannot sprawl.
+5. Define what counts as done in behavior terms.
+6. End with exactly one recommended next step.
+
+Optimize for solo founders and non-coders:
+- prefer behavior language over engineering language
+- do not ask the user to review code or architecture
+- do not create broad roadmaps unless explicitly asked
+- do not let one session contain multiple major outcomes
+- surface ambiguity instead of silently filling critical gaps
+
+## Default output
+
+### Active outcome
+One sentence in the form: `User can ...` or `Admin can ...`
+
+### Why this outcome now
+Two or three short bullets on user value or unblock value.
+
+### Assumptions to resolve
+List only assumptions that materially change behavior. Mark each as:
+- `blocking`
+- `important`
+- `safe default`
+
+### Scope for this build cycle
+Include:
+- in scope
+- out of scope
+- risk areas
+
+### Done means
+Write 3 to 7 behavior-based acceptance points.
+
+### Evidence to collect
+Specify minimum proof needed:
+- scenario replay
+- screenshot or video
+- test/check expectations if relevant
+
+### Recommended next step
+Give **one** concrete next action.
+
+## Hard rules
+
+- refuse to mark an outcome as ready if critical assumptions are still open
+- keep scope narrow enough for one focused Cursor execution cycle
+- separate `working in preview` from `verified`
+- prefer one verified outcome over three half-built ones
+- translate technical risk into product language

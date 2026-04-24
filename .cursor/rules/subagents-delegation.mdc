@@ -1,0 +1,24 @@
+---
+description: Use when coordinating work across roles—read DOCS first, optionally delegate to project subagents in .cursor/agents/, then update STATUS (always after meaningful integrated work), NEXT_STEP when it changes, DECISIONS only if a decision was made.
+alwaysApply: false
+---
+
+# Subagent delegation (project)
+
+## Source of truth
+1. `DOCS/MASTER_TODO_CURSOR.md`
+2. `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md`, `DOCS/DECISIONS.md`
+3. Root `AGENTS.md`
+4. `.cursor/agents/README.md` (how to invoke)
+
+Subagents in `.cursor/agents/*.md` **support** this order; they must not invent phases or skip `DOCS/`.
+
+## When to delegate (no overlap)
+- **repo-researcher** — read-only facts + mechanical path hints from `NEXT_STEP`; zero writes; no outcomes/acceptance/proof/ship.
+- **outcome-planner** — one outcome + assumptions + acceptance + **ALLOWED_PATHS** handoff; no repo deep-scan, no code, no proof/ship.
+- **outcome-implementer** — patch only inside **ALLOWED_PATHS**; stops on `scope_exceeded`; no proof/ship language.
+- **evidence-reviewer** — required acceptance → cited evidence; **`go` iff** all required `covered` and no `failed`; no code; no lane PASS/FAIL.
+- **release-gate** — `DECISION(lane): PASS|FAIL` per requested lane + **one** next step; no evidence table; no code.
+
+## After delegation
+Update `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md`, and `DOCS/DECISIONS.md` (if a decision was made) after each **meaningful** integrated result—subagent output alone does not close a phase.
