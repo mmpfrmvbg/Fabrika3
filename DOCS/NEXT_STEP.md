@@ -2,28 +2,28 @@
 
 ## Single Next Step
 
-- title: **`P7-7-2-design-system-minimal`**: по **`MASTER` §7.2** добавить **статические** (без привязки к данным) компоненты **badges**: перечень статусов (**idea**, **specified**, **building**, **working_in_preview**, **verified**, **approved**, **live**, **blocked**), **maturity** (**prototype**, **usable**, **hardened**, **release-ready**, **live**), **risk** — как визуальные варианты (Tailwind + существующий shadcn/Button или простые **`span`**), плюс минимальное выравнивание типографики/отступов в **`AppShell`** / главной странице; **без** новых npm-зависимостей, **без** вызовов API, **без** экранов Today/Outcome; затем **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** и короткий просмотр в браузере; обновить **`DOCS/STATUS.md`**
+- title: **`P7-8-1-overview-static-blocks`**: по **`MASTER` §8.1** на странице **`/`** (внутри существующего **Today** placeholder) добавить **шесть** статических блоков с заголовками и честным placeholder-текстом: **Current objective**, **Verified outcomes summary**, **Blockers summary**, **Last change summary**, **Release maturity stage**, **One next recommended step** — вёрстка через уже существующие **`SectionCard`** / **`MetaLabel`** / **`StatusBadge`**; **без** `fetch` к **`/api/*`**, **без** ложных «всё зелёное» состояний (**`MASTER` §8.2**); затем **`npm run typecheck`**, **`lint`**, **`test`**, **`build`** и короткий просмотр в браузере; обновить **`DOCS/STATUS.md`**
 - owner: cursor
 - type: implementation
 - priority: high
 
 ## Why This Is The Next Step
 
-- **`P7-app-shell-7-1-minimal`** закрыт; в **`MASTER` §7** следующий явный блок после §7.1 — **§7.2 Shared design system** (минимальный слой перед §8 Overview screen).
+- §7.1 shell и §7.2 минимальные токены готовы; **`MASTER` §8.1** задаёт обязательную структуру **Today** — следующий узкий шаг — визуальные блоки без данных.
 
 ## Input Needed
 
-- **`DOCS/MASTER_TODO_CURSOR.md` §7.2**, **`DOCS/UI_V1.md`**, текущие **`components/ui/*`**, **`app/globals.css`**.
+- **`DOCS/MASTER_TODO_CURSOR.md` §8.1–§8.2**, **`DOCS/UI_V1.md` §3.1**, текущий **`app/page.tsx`**.
 
 ## Exact Action
 
-- Один небольшой набор компонентов (например **`components/ui/badge.tsx`** или **`components/v1-badges.tsx`**) + точечные правки layout/главной страницы.
+- Один файл **`app/page.tsx`** (+ при необходимости маленький **`components/v1/`** helper), затем toolchain + **`STATUS`**.
 
 ## Definition of Done
 
-- [ ] В UI видны **все** перечисленные в §7.2 **имена** статусов/стадий (хотя бы в демо-рядке на dev-странице или внизу **`/`**), **`STATUS`** обновлён.
+- [ ] На **`/`** видны **все шесть** заголовков §8.1 с честным empty/copy; **`STATUS`** содержит evidence.
 
 ## If Blocked
 
-- fallback: зафиксировать **blocked** в **`STATUS`**, если shadcn-конвенции конфликтуют с минимализмом без новых пакетов.
-- escalate_to_user_if: Нужен другой дизайн-токен / библиотека иконок.
+- fallback: **blocked** в **`STATUS`**, если копирайт **Today** противоречит **`UI_V1`** / **`UX_V1_EXTRACT`** без уточнения scope.
+- escalate_to_user_if: Нужен другой порядок блоков, чем в **`MASTER` §8.1**.

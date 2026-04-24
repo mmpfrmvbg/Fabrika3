@@ -1,10 +1,12 @@
 import Link from "next/link";
 
+import { MetaLabel } from "@/components/v1/meta-label";
+import { StatusBadge } from "@/components/v1/status-badge";
 import { cn } from "@/lib/utils";
 
 /**
- * P7-app-shell-7-1-minimal: global shell per `MASTER` §7.1 + `UI_V1.md` —
- * left nav (workflow sections), top status bar (static honesty line).
+ * P7-app-shell-7-1-minimal + P7-7-2: global shell per `MASTER` §7.1 + `UI_V1.md` —
+ * left nav (workflow sections), top status bar (static honesty line + badges).
  * No data fetching, no auth, no API calls.
  */
 const SHELL_NAV = [
@@ -30,9 +32,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             Fabrika3
           </Link>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <MetaLabel className="mt-2 text-sidebar-foreground/70">
             v1 shell — navigation only
-          </p>
+          </MetaLabel>
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Product sections">
           {SHELL_NAV.map((item) => (
@@ -52,21 +54,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header
-          className="flex h-12 shrink-0 items-center border-b border-border bg-background px-4"
+          className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-2 gap-y-2 border-b border-border bg-background px-4 py-2"
           role="banner"
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:text-sm">
-            <span className="font-medium text-foreground">Phase 7</span>
-            <span aria-hidden>·</span>
-            <span>App shell (§7.1)</span>
-            <span aria-hidden>·</span>
-            <span className="rounded-md bg-muted px-2 py-0.5 text-muted-foreground">
-              prototype
-            </span>
-            <span aria-hidden>·</span>
-            <span className="rounded-md border border-border px-2 py-0.5">
-              not_release_ready
-            </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge variant="phase_7" />
+            <span className="text-xs text-muted-foreground sm:text-sm">App shell (§7.1)</span>
+            <StatusBadge variant="prototype" />
+            <StatusBadge variant="not_release_ready" />
+            <StatusBadge variant="no_api" />
           </div>
         </header>
         <main className="min-h-0 flex-1 overflow-auto bg-background">{children}</main>
