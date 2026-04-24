@@ -87,10 +87,16 @@ npm run db:migrate  # Drizzle: apply migrations (requires DATABASE_URL and a rea
 npm run db:seed:sample-project  # Inserts one sample project row (requires DATABASE_URL + migrated schema)
 # With `npm run dev` and DATABASE_URL set, smoke-read sample project:
 # curl.exe "http://127.0.0.1:3000/api/projects?slug=fabrika-v1-sample"
+# POST JSON body: on Windows PowerShell, `curl -d "{...}"` often breaks JSON; use e.g.:
+# node -e "fetch('http://127.0.0.1:3000/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'My project',slug:'my-unique-slug',status:'active'})}).then(r=>r.text()).then(console.log)"
 # curl.exe "http://127.0.0.1:3000/api/outcomes?project_id=<uuid-from-projects-endpoint>"
+# node -e "fetch('http://127.0.0.1:3000/api/outcomes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:'<uuid-from-projects-endpoint>',title:'New outcome'})}).then(r=>r.text()).then(console.log)"
 # curl.exe "http://127.0.0.1:3000/api/assumptions?outcome_id=<uuid-from-outcomes-endpoint>"
+# node -e "fetch('http://127.0.0.1:3000/api/assumptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({outcome_id:'<uuid-from-outcomes-endpoint>',description:'New assumption'})}).then(r=>r.text()).then(console.log)"
 # curl.exe "http://127.0.0.1:3000/api/acceptance-criteria?outcome_id=<uuid-from-outcomes-endpoint>"
+# node -e "fetch('http://127.0.0.1:3000/api/acceptance-criteria',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({outcome_id:'<uuid-from-outcomes-endpoint>',code:'ac-001',description:'Criterion text'})}).then(r=>r.text()).then(console.log)"
 # curl.exe "http://127.0.0.1:3000/api/evidence-items?outcome_id=<uuid-from-outcomes-endpoint>"
+# node -e "fetch('http://127.0.0.1:3000/api/evidence-items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({outcome_id:'<uuid-from-outcomes-endpoint>',evidence_type:'manual_note',title:'API-created evidence',artifact_ref:'local:post-smoke'})}).then(r=>r.text()).then(console.log)"
 npm run build   # production build (Turbopack)
 npm run start   # run production server (after build)
 npm run lint    # ESLint (Next core-web-vitals + TypeScript)

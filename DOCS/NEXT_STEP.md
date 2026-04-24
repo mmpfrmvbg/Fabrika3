@@ -2,33 +2,32 @@
 
 ## Single Next Step
 
-- title: **P6 — минимальный create для `project`:** один **`POST /api/projects`** с валидацией полей по **`DATA_MODEL_V1`** (имя, slug, статус из канона), **`getDb()`** + Drizzle **`insert`**; **без** UI; smoke **`curl`** + запись evidence в **`STATUS.md`** — первый шаг к Definition of done **`MASTER` §6** (CRUD по пяти сущностям; остальные сущности — отдельными задачами после этого шага)
+- title: **`P6-scripted-smoke-five-apis`**: добавить **`scripts/smoke-api-five-entities.mjs`** — при **`DATABASE_URL`** и запущенном **`npm run dev`** (порт зафиксировать в скрипте или аргументом) выполнить минимальные **HTTP**-проверки **GET/POST** (или «GET после seed» где POST идемпотентно неудобен) для **`/api/projects`**, **`/api/outcomes`**, **`/api/assumptions`**, **`/api/acceptance-criteria`**, **`/api/evidence-items`**; **exit 0** только если все пять цепочек дают ожидаемые коды и парсабельный JSON с **`id`**; зафиксировать одну команду запуска + сухой лог итога в **`DOCS/STATUS.md`** (evidence) — **без** `PUT`/`PATCH`/`DELETE`, **без** UI, **без** изменений **`README.md`**, **`MASTER`**, **`DECISIONS`**, **`AGENTS.md`**, **`.mdc`**, **`db/schema.ts`**
 - owner: cursor
-- type: implementation (backend write path)
+- type: implementation (verification script only)
 - priority: high
 
 ## Why This Is The Next Step
 
-- Минимальные **read** по всем пяти таблицам **`DATA_MODEL_V1`** закрыты; по **`MASTER` §6** следующий критерий фазы — работающий **CRUD**; логично начать с корня иерархии — **`project`**.
+- **`P6-master-section6-dod-reconcile`** показал симметрию smoke только для **`evidence_item`**; честность фазы 6 требует воспроизводимой проверки остальных четырёх read/create путей тем же классом evidence.
 
 ## Input Needed
 
-- **`DATABASE_URL`**; при необходимости — не конфликтовать со slug **`fabrika-v1-sample`** в smoke-тестах.
+- Локальный Postgres + **`DATABASE_URL`**; возможность поднять **`npm run dev`**.
 
 ## Exact Action
 
-1. Добавить **`POST`** в **`app/api/projects/route.ts`** (или отдельный handler, если разделение чище) с телом JSON и ответом с созданной строкой.  
-2. **`npm run typecheck`**, **`lint`**, **`test`**, **`build`**.  
-3. Обновить **`STATUS.md`**.
+- Реализовать скрипт и обновить **`STATUS.md`** evidence-блоком; при невозможности запуска — **не** маскировать: записать blocker в **`STATUS.md`**.
 
 ## Expected Output
 
-- Создание **`project`** через API с честным smoke в **`STATUS`**.
+- Файл **`scripts/smoke-api-five-entities.mjs`** + строка evidence в **`STATUS.md`** **или** честный blocker.
 
 ## Definition of Done
 
-- [ ] В **`STATUS.md`** есть evidence для **`POST /api/projects`**.
+- [ ] Скрипт в репозитории и **`STATUS.md`** отражает успешный прогон **или** явную причину отказа.
 
 ## If Blocked
 
-- fallback: зафиксировать ошибку enum/constraint в **Notes** без секретов.
+- fallback: Зафиксировать в **`STATUS.md` What Is Blocked`** отсутствие БД/порта и оставить **`NEXT_STEP`** на повтор после появления среды.
+- escalate_to_user_if: Политика среды запрещает локальный dev listener.
