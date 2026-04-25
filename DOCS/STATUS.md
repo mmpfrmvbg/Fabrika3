@@ -88,6 +88,7 @@
 - [x] Полный Definition of done §3 + сверка **§3.1–§3.2** в `MASTER_TODO_CURSOR.md` с репозиторием (**RB-3.phase-close-sync**)
 
 ## What Was Completed
+- **PR3-conflict-resolution-only (2026-04-25):** выполнено только устранение merge-conflict-поверхности для GitHub PR #3 в файлах **`DOCS/STATUS.md`** и **`app/outcomes/page.tsx`** без старта **`P9-9.2`**/**`P9-9.3`** и без расширения product scope. Для **`/outcomes`** подтверждён сохранённый read-only API baseline: optional **`?project_id=<uuid>`**, поля **`status` / `release_readiness` / `updated_at`**, честный placeholder **risk/blocker/next-step**. Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - **P9-font-build-blocker-fix-system-fonts (2026-04-25):** устранён блокер сборки без сети: в **`app/layout.tsx`** удалён импорт **`next/font/google`** (`Geist`, `Geist_Mono`) и привязка CSS-переменных от remote fonts; в **`app/globals.css`** добавлены локальные/system fallback-переменные **`--font-sans`** и **`--font-geist-mono`**. Scope не расширялся (без API/DB/feature). Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**; `next/font`-network blocker более не воспроизводится в этом runtime.
 - **P9-9.1-outcomes-list-readonly-fields-review-fix (2026-04-25):** по фидбеку к предыдущему diff в **`app/outcomes/page.tsx`** убрана эвристика из placeholder (без предположений по risk/blocker из `status`/`release_readiness`), `updated_at` теперь показывается как сырой API-field (без переформатирования), placeholder оставлен как честный статический текст про отсутствие полей в `GET /api/outcomes`. Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`** — **exit 0**; **`npm run build`** — **fail** из-за сетевой недоступности Google Fonts (`next/font` → `Geist` / `Geist Mono`).
 - **P9-9.1-outcomes-list-readonly-fields (2026-04-25):** **`app/outcomes/page.tsx`** — в read-only списке `/outcomes` явно показаны **`status`**, **`release_readiness`**, **`updated_at`**; добавлено честное поле **`risk / blocker / next step (placeholder)`** на базе текущих API-данных (без новых API, без CRUD, без `/outcomes/[id]`). Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`** — **exit 0**; **`npm run build`** — **fail** из-за недоступности Google Fonts (`next/font` → `Geist` / `Geist Mono`), поэтому сессия — **working_in_preview**, не **verified**.
@@ -177,6 +178,7 @@
 - `app/outcomes/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.1-outcomes-list-readonly-fields**)*
 - `app/outcomes/page.tsx`, `DOCS/STATUS.md` *(**P9-9.1-outcomes-list-readonly-fields-review-fix**)*
 - `app/layout.tsx`, `app/globals.css`, `DOCS/STATUS.md` *(**P9-font-build-blocker-fix-system-fonts**)*
+- `DOCS/STATUS.md`, `app/outcomes/page.tsx` *(**PR3-conflict-resolution-only**)*
 
 ## Notes
 - **Форматирование (format):** Prettier **намеренно отложен** (см. предыдущие Notes).
