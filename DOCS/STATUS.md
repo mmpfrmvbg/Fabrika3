@@ -8,8 +8,8 @@
 - updated_at: 2026-04-25
 
 ## Current Task
-- id: P9-9.1-outcomes-list-readonly-fields
-- title: По **`MASTER` §9.1** — на **`/outcomes`** (read-only) показать поля списка из текущего API: **status**, **release_readiness**, **updated_at** (и, если возможно без новых API, индикатор blocker/risk как честный placeholder). **Без** форм/CRUD и **без** `/outcomes/[id]`. Toolchain + **`STATUS`**.
+- id: P9-9.2-outcome-detail-readonly-skeleton
+- title: По **`MASTER` §9.2** — добавить **`/outcomes/[id]`** как read-only detail surface (Summary / Assumptions / Acceptance / Evidence / Release readiness delta) на существующих GET API, **без** форм/CRUD и без расширения backend scope. Toolchain + **`STATUS`**.
 - status: planned
 - linked_phase: 7
 
@@ -88,6 +88,7 @@
 - [x] Полный Definition of done §3 + сверка **§3.1–§3.2** в `MASTER_TODO_CURSOR.md` с репозиторием (**RB-3.phase-close-sync**)
 
 ## What Was Completed
+- **P9-9.1-outcomes-list-readonly-fields (2026-04-25):** **`app/outcomes/page.tsx`** — в read-only списке `/outcomes` явно показаны **`status`**, **`release_readiness`**, **`updated_at`**; добавлено честное поле **`risk / blocker / next step (placeholder)`** на базе текущих API-данных (без новых API, без CRUD, без `/outcomes/[id]`). Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`** — **exit 0**; **`npm run build`** — **fail** из-за недоступности Google Fonts (`next/font` → `Geist` / `Geist Mono`), поэтому сессия — **working_in_preview**, не **verified**.
 - **P4-4.3-architecture:** создан **`DOCS/ARCHITECTURE_V1.md`** — цель документа; граница v1; строительные блоки; ссылки на **data / execution / UI/UX** через extracts; **out of scope**; правила для Cursor; «do not assume». В **`MASTER_TODO_CURSOR.md`** отмечена строка **`ARCHITECTURE_V1.md`** в **§4.3**. Обновлены **`DOCS/INDEX.md`** (Primary tier, порядок чтения п. 8, таблица §4, §7 phase navigation), **`STATUS.md`**, **`NEXT_STEP.md`**. **Код / README / DECISIONS** не менялись.
 - **P4-4.3-data-model:** создан **`DOCS/DATA_MODEL_V1.md`** — цель; пять сущностей; по каждой: назначение, минимальные поля, связи, что сознательно не моделируется; docs-only vs БД; порядок миграций + индексы; явный out-of-scope; «do not assume»; приоритет узкой трактовки vs **`V1_SCOPE`**. Обновлены **`ARCHITECTURE_V1.md`** (§2 Data, §4, §8 rule 3, §9, document control), **`MASTER_TODO_CURSOR.md`** §4.3 строка **`DATA_MODEL_V1`**, **`INDEX.md`** (Primary, чтение п. 9–14, таблица §4, §7, описание **`ERD - Data Model`**). **`README` / код** не менялись; **`DECISIONS.md`** — без новых записей (рекомендации uuid/bigserial и FK — в тексте **`DATA_MODEL_V1`**, не как DEC).
 - **P4-4.3-events:** создан **`DOCS/EVENTS_V1.md`** — цель; что такое state/event в v1; минимальные переходы; docs-only конвенции; явный out-of-scope (брокер, outbox, оркестратор); как пользоваться документом в Cursor; «do not assume»; приоритет **`V1_SCOPE`** при натяжке с extract. Обновлены **`ARCHITECTURE_V1.md`** (§5, §8 п.5, §9, document control), **`MASTER_TODO_CURSOR.md`** §4.3 строка **`EVENTS_V1`**, **`INDEX.md`** (Primary, чтение п. 9–15, таблица §4, §7, описание **`EVENTS_V1_EXTRACT`**). **`README` / код / DECISIONS`** не менялись.
@@ -117,7 +118,7 @@
 - **P6-evidence-item-post-minimal (2026-04-24):** **`app/api/evidence-items/route.ts`** — добавлен **`POST /api/evidence-items`**: JSON **`outcome_id`** (UUID, существующий **`outcome`**), **`evidence_type`**, **`title`**, **`artifact_ref`**; опционально **`summary`**, **`status`** (иначе **`draft`**); **`400`** на невалидный ввод; **`404`** **`outcome not found`** (предпроверка + **`23503`**); ответ **`201`** **`{ evidence_item: … }`** в том же snake_case, что и элементы **`GET`**. Рефакторинг **`GET`**: общий **`mapEvidenceRow`**. **`README.md`** — пример **`node -e "fetch(...POST...)"`** для smoke. Проверка toolchain (**без** обязательного Postgres на машине CI-агента): **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0** (**2026-04-24**, полный **`next build`** ~6 min на этой машине). **Read-back** через **`GET`** после **`POST`** — **не** автоматизирован в **`npm test`**; честный proof — ручной шаг в **`Current Task`**.
 
 ## What Is In Progress
-- item: **Фаза 7** — **`P7-10-1-today-verified-outcomes-copy-honesty`** закрыт (**verified**). **`Current Task`**: **`P9-9.1-outcomes-list-readonly-fields`** (см. **`NEXT_STEP`**).
+- item: **Фаза 7** — **`P9-9.1-outcomes-list-readonly-fields`** выполнен по scope (read-only поля + placeholder), но сессия помечена как **working_in_preview** из-за сетевого сбоя `next/font` при `npm run build`; **`Current Task`** см. **`NEXT_STEP`**.
 
 ## What Is Blocked
 - item: нет
@@ -171,6 +172,7 @@
 - `app/outcomes/page.tsx`, `app/outcomes/loading.tsx`, `app/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P7-9-2-outcomes-index-readonly-api**)* 
 - `app/outcomes/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P7-9-3-outcomes-index-query-project-id**)* 
 - `app/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P7-10-1-today-verified-outcomes-copy-honesty**)*
+- `app/outcomes/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.1-outcomes-list-readonly-fields**)*
 
 ## Notes
 - **Форматирование (format):** Prettier **намеренно отложен** (см. предыдущие Notes).

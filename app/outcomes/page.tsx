@@ -135,6 +135,24 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
+function formatUtc(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toISOString();
+}
+
+function placeholderOperationalField(o: OutcomeRow): string {
+  if (o.status === "blocked") {
+    return "Potential blocker: status is blocked. API does not expose blocker reason/next step yet.";
+  }
+
+  if (o.release_readiness === "not_release_ready") {
+    return "Potential risk: not_release_ready. API does not expose explicit risk/next step field yet.";
+  }
+
+  return "Placeholder: risk/blocker/next step fields are not available in GET /api/outcomes yet.";
+}
+
 export default async function OutcomesIndexPage() {
   const result = await loadOutcomesForSampleProject();
 
@@ -229,6 +247,14 @@ export default async function OutcomesIndexPage() {
                         <div>
                           <dt className="font-medium text-foreground/80">release_readiness</dt>
                           <dd className="font-mono">{o.release_readiness}</dd>
+                        </div>
+                        <div>
+                          <dt className="font-medium text-foreground/80">updated_at</dt>
+                          <dd className="font-mono">{formatUtc(o.updated_at)}</dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="font-medium text-foreground/80">risk / blocker / next step (placeholder)</dt>
+                          <dd>{placeholderOperationalField(o)}</dd>
                         </div>
                       </dl>
                       {o.release_readiness_note ? (
