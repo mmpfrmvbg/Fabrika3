@@ -57,13 +57,19 @@ export default function Home() {
             title="Verified outcomes summary"
           >
             <p className="text-sm leading-relaxed text-muted-foreground">
-              There is <strong className="text-foreground">no live list</strong> of outcomes here, so this cannot
-              show counts, filters, or per-row readiness. Separately, the repo has a{" "}
+              Today (<code className="rounded bg-muted px-1 py-0.5">/</code>) does not fetch outcomes, so this block
+              does not show dynamic counts, filters, or per-row readiness. A read-only, API-backed list exists on{" "}
+              <Link href="/outcomes" className="font-medium text-primary underline-offset-4 hover:underline">
+                /outcomes
+              </Link>{" "}
+              (still no create/edit/delete UI and no detail route).
+              <br />
+              <br />
+              Separately, the repo has a{" "}
               <strong className="text-foreground">verified HTTP baseline</strong> for the five{" "}
               <code className="rounded bg-muted px-1 py-0.5">DATA_MODEL_V1</code> entities (scripts +{" "}
-              <code className="rounded bg-muted px-1 py-0.5">DOCS/STATUS.md</code>) — that proves API + DB wiring
-              for engineers, <strong className="text-foreground">not</strong> an L2/L3 “verified shipping
-              outcome” claim for end users per{" "}
+              <code className="rounded bg-muted px-1 py-0.5">DOCS/STATUS.md</code>) - that proves API + DB wiring
+              for engineers, <strong className="text-foreground">not</strong> an L2/L3 verified outcome claim per{" "}
               <code className="rounded bg-muted px-1 py-0.5">RELEASE_CRITERIA_V1.md</code>.
             </p>
             <div className="flex flex-wrap items-center gap-2 pt-2">

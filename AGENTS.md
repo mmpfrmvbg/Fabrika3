@@ -138,3 +138,54 @@ A good response makes the founder feel:
 - "I know what is really done"
 - "I know what is missing"
 - "I know the one thing I should do next"
+
+## Codex execution mode
+
+When working in Codex, the source of truth is:
+
+1. DOCS/INDEX.md
+2. DOCS/STATUS.md
+3. DOCS/NEXT_STEP.md
+4. DOCS/DECISIONS.md
+5. DOCS/MASTER_TODO_CURSOR.md
+
+Codex must execute only the single current task from DOCS/NEXT_STEP.md.
+
+Cursor-specific files such as `.cursor/rules/*.mdc` and `.cursor/agents/*.md` are supporting documentation only. They are not the runtime source of truth in Codex.
+
+Rules:
+- Do not invent a new plan.
+- Do not skip phases.
+- Do not widen scope.
+- Keep exactly one active task.
+- Do not start future tasks.
+- Do not claim readiness without evidence.
+- If code changes, run the checks required by DOCS/NEXT_STEP.md.
+- Usually this means:
+  - npm run typecheck
+  - npm run lint
+  - npm test
+  - npm run build
+- If a local DB or dev server is required and unavailable, record the exact blocker honestly.
+- After meaningful progress, update DOCS/STATUS.md and DOCS/NEXT_STEP.md.
+- Update DOCS/DECISIONS.md only if a real decision was made.
+
+Output format:
+1. What changed
+2. Files changed
+3. Honest current status
+4. One next step
+
+## Cursor artifacts
+
+The following files are Cursor-specific supporting artifacts:
+
+- .cursor/rules/*.mdc
+- .cursor/agents/*.md
+
+In Codex, these files are not active subagents. They may be read for context, but they do not override:
+
+1. direct user instructions
+2. AGENTS.md
+3. DOCS/NEXT_STEP.md
+4. DOCS/MASTER_TODO_CURSOR.md
