@@ -8,8 +8,8 @@
 - updated_at: 2026-04-25
 
 ## Current Task
-- id: P9-9.2-outcome-detail-readonly-skeleton
-- title: По **`MASTER` §9.2** — добавить **`/outcomes/[id]`** как read-only detail surface (Summary / Assumptions / Acceptance / Evidence / Release readiness delta) на существующих GET API, **без** форм/CRUD и без расширения backend scope. Toolchain + **`STATUS`**.
+- id: P9-9.3-wip-discipline-copy-honesty
+- title: По **`MASTER` §9.3** — добавить минимальную честную WIP-дисциплину в UI-копирайтинг (без enforcement и без backend), чтобы явно отражать «one active outcome» как правило поведения, не создавая ложной автоматизации. Toolchain + **`STATUS`**.
 - status: planned
 - linked_phase: 7
 
@@ -88,6 +88,7 @@
 - [x] Полный Definition of done §3 + сверка **§3.1–§3.2** в `MASTER_TODO_CURSOR.md` с репозиторием (**RB-3.phase-close-sync**)
 
 ## What Was Completed
+- **P9-9.2-outcome-detail-readonly-skeleton (2026-04-25):** добавлен минимальный маршрут **`app/outcomes/[id]/page.tsx`** как честный read-only skeleton без fetch/forms/mutations: секции **Summary / Assumptions / Acceptance / Evidence / Release readiness delta** реализованы как placeholders; показан route `id` только для display; добавлена навигация назад на **`/outcomes`**; выставлены маркеры **`building` + `not_release_ready` + `prototype`**. Поведение **`/outcomes`** не менялось. Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - **P9-font-build-blocker-fix-system-fonts (2026-04-25):** устранён блокер сборки без сети: в **`app/layout.tsx`** удалён импорт **`next/font/google`** (`Geist`, `Geist_Mono`) и привязка CSS-переменных от remote fonts; в **`app/globals.css`** добавлены локальные/system fallback-переменные **`--font-sans`** и **`--font-geist-mono`**. Scope не расширялся (без API/DB/feature). Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**; `next/font`-network blocker более не воспроизводится в этом runtime.
 - **P9-9.1-outcomes-list-readonly-fields-review-fix (2026-04-25):** по фидбеку к предыдущему diff в **`app/outcomes/page.tsx`** убрана эвристика из placeholder (без предположений по risk/blocker из `status`/`release_readiness`), `updated_at` теперь показывается как сырой API-field (без переформатирования), placeholder оставлен как честный статический текст про отсутствие полей в `GET /api/outcomes`. Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`** — **exit 0**; **`npm run build`** — **fail** из-за сетевой недоступности Google Fonts (`next/font` → `Geist` / `Geist Mono`).
 - **P9-9.1-outcomes-list-readonly-fields (2026-04-25):** **`app/outcomes/page.tsx`** — в read-only списке `/outcomes` явно показаны **`status`**, **`release_readiness`**, **`updated_at`**; добавлено честное поле **`risk / blocker / next step (placeholder)`** на базе текущих API-данных (без новых API, без CRUD, без `/outcomes/[id]`). Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`** — **exit 0**; **`npm run build`** — **fail** из-за недоступности Google Fonts (`next/font` → `Geist` / `Geist Mono`), поэтому сессия — **working_in_preview**, не **verified**.
@@ -120,7 +121,7 @@
 - **P6-evidence-item-post-minimal (2026-04-24):** **`app/api/evidence-items/route.ts`** — добавлен **`POST /api/evidence-items`**: JSON **`outcome_id`** (UUID, существующий **`outcome`**), **`evidence_type`**, **`title`**, **`artifact_ref`**; опционально **`summary`**, **`status`** (иначе **`draft`**); **`400`** на невалидный ввод; **`404`** **`outcome not found`** (предпроверка + **`23503`**); ответ **`201`** **`{ evidence_item: … }`** в том же snake_case, что и элементы **`GET`**. Рефакторинг **`GET`**: общий **`mapEvidenceRow`**. **`README.md`** — пример **`node -e "fetch(...POST...)"`** для smoke. Проверка toolchain (**без** обязательного Postgres на машине CI-агента): **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0** (**2026-04-24**, полный **`next build`** ~6 min на этой машине). **Read-back** через **`GET`** после **`POST`** — **не** автоматизирован в **`npm test`**; честный proof — ручной шаг в **`Current Task`**.
 
 ## What Is In Progress
-- item: **Фаза 7** — блокер `next/font` снят, **`P9-9.1-outcomes-list-readonly-fields`** теперь подтверждён как **verified** (toolchain + `npm run build` = exit 0); **`Current Task`** остаётся **`P9-9.2-outcome-detail-readonly-skeleton`** по **`NEXT_STEP`**.
+- item: **Фаза 7** — **`P9-9.2-outcome-detail-readonly-skeleton`** выполнен как статичный честный каркас (без API detail fetch и без мутаций), статус сессии: **verified** (toolchain + build = exit 0). **`Current Task`**: **`P9-9.3-wip-discipline-copy-honesty`** по **`NEXT_STEP`**.
 
 ## What Is Blocked
 - item: нет
@@ -177,6 +178,7 @@
 - `app/outcomes/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.1-outcomes-list-readonly-fields**)*
 - `app/outcomes/page.tsx`, `DOCS/STATUS.md` *(**P9-9.1-outcomes-list-readonly-fields-review-fix**)*
 - `app/layout.tsx`, `app/globals.css`, `DOCS/STATUS.md` *(**P9-font-build-blocker-fix-system-fonts**)*
+- `app/outcomes/[id]/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.2-outcome-detail-readonly-skeleton**)*
 
 ## Notes
 - **Форматирование (format):** Prettier **намеренно отложен** (см. предыдущие Notes).
