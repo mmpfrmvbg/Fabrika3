@@ -29,6 +29,8 @@ type OutcomeRow = {
   updated_at: string;
 };
 
+const UNFINISHED_STATUSES = new Set(["draft", "active", "blocked"]);
+
 type ProjectSource =
   | { kind: "sample_slug"; projectId: string }
   | { kind: "query_param"; projectId: string };
@@ -186,6 +188,11 @@ type OutcomesIndexPageProps = {
 export default async function OutcomesIndexPage({ searchParams }: OutcomesIndexPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const result = await loadOutcomes(resolvedSearchParams);
+  const unfinishedCount =
+    result.kind === "ok"
+      ? result.outcomes.filter((o) => UNFINISHED_STATUSES.has(o.status)).length
+      : null;
+  const shouldWarnParallelWip = unfinishedCount != null && unfinishedCount > 1;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
@@ -214,6 +221,23 @@ export default async function OutcomesIndexPage({ searchParams }: OutcomesIndexP
       </SectionCard>
 
       <SectionCard eyebrow="API result" title="Outcome list">
+        {shouldWarnParallelWip ? (
+          <div
+            className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-100"
+            role="status"
+          >
+            <p className="font-medium">WIP discipline warning (MASTER 9.3)</p>
+            <p className="mt-2">
+              API currently shows <strong>{unfinishedCount}</strong> unfinished outcomes (
+              <code className="rounded bg-muted px-1 py-0.5 text-foreground">draft</code>,{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-foreground">active</code>,{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-foreground">blocked</code>). v1
+              guidance is one active outcome focus; this is a read-only warning only, with no
+              backend enforcement and no mutations on this page.
+            </p>
+          </div>
+        ) : null}
+
         {result.kind === "error" ? (
           <div
             className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive"

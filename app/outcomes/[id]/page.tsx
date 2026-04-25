@@ -436,6 +436,17 @@ export default async function OutcomeDetailPage({
           </li>
         </ul>
       </SectionCard>
+
+      <SectionCard eyebrow="WIP discipline" title="MASTER 9.3 signal">
+        <p className="text-sm text-muted-foreground">
+          This detail route stays read-only and does not enforce WIP in backend logic. For
+          parallel unfinished outcomes, see the warning on <code className="rounded bg-muted px-1">/outcomes</code>.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Data is not available from the current v1 API yet for a trustworthy per-project WIP
+          check directly on this detail route without widening scope.
+        </p>
+      </SectionCard>
     </div>
   );
 }

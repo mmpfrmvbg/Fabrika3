@@ -8,8 +8,8 @@
 - updated_at: 2026-04-25
 
 ## Current Task
-- id: P9-9.3-wip-discipline-honest-warning-surface
-- title: По **`MASTER` §9.3** — добавить минимальную честную WIP discipline-поверхность (warn при параллельных незавершённых outcomes) без мутаций и без расширения backend scope.
+- id: P10-10.1-assumptions-readonly-surface-minimal
+- title: По **`MASTER` §10.1** — добавить минимальную read-only assumptions surface в UI outcome-потока (без форм/mutations/backend расширения), сохранив honesty и v1 scope.
 - status: planned
 - linked_phase: 7
 
@@ -73,6 +73,7 @@
 - [x] **`P7-9-3-outcomes-index-query-project-id`** (**2026-04-25**) — **`app/outcomes/page.tsx`**: опциональный **`?project_id=<uuid>`** → прямой **`GET /api/outcomes`**; без query — fallback **`fabrika-v1-sample`** как в **P7-9-2**; состояние **`invalid_query`** (не UUID, **без** маскировки под empty); пустой список для валидного неизвестного id с пояснением (API не **404**); **`searchParams: Promise<…>`**; ASCII-дефисы в user-visible copy; toolchain **`typecheck` / `lint` / `test` / `build`** — **exit 0**; smoke **`npm run dev -- -p 3056`** (**.env.local**): **`GET /outcomes` → 200**; **`GET /outcomes?project_id=not-a-uuid` → 200** + UI **Invalid project_id**; **`GET /api/projects?slug=fabrika-v1-sample`** → **`project.id=a1438677-0879-457e-bb19-363da9986dbb`**; **`GET /outcomes?project_id=a1438677-0879-457e-bb19-363da9986dbb` → 200**; **`GET /outcomes?project_id=11111111-1111-4111-8111-111111111111` → 200** (пустой список); см. **What Was Completed**
 - [x] **`P7-10-1-today-verified-outcomes-copy-honesty`** (**2026-04-25**) — **`app/page.tsx`** (MASTER §8.1 block 2): убрано «no live list» как утверждение “в продукте вообще”; теперь честно: **Today (`/`) не fetch’ит outcomes**, а read-only список находится на **`/outcomes`**; отдельно подчёркнуто, что «verified» baseline относится к **HTTP API + DB wiring**, а не к L2/L3 outcome readiness; **без** добавления fetch на Today. Toolchain **`typecheck` / `lint` / `test` / `build`** — **exit 0** (см. terminal log).
 - [x] **`P9-9.2-outcome-detail-readonly-skeleton`** (**2026-04-25**) — добавлен **`app/outcomes/[id]/page.tsx`** как честный read-only skeleton по **`MASTER` §9.2**: секции **Summary / Assumptions / Acceptance / Evidence / Release readiness delta**, ссылка **back to `/outcomes`**, явные дисклеймеры «нет create/edit/delete UI, нет форм/мутаций/server actions, продукт not_release_ready»; загрузка только через существующие **GET** API (**`/api/projects`**, **`/api/outcomes`**, **`/api/assumptions`**, **`/api/acceptance-criteria`**, **`/api/evidence-items`**) без изменений backend scope; для отсутствующих данных показан placeholder «Data is not available from the current v1 API yet.». Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
+- [x] **`P9-9.3-wip-discipline-honest-warning-surface`** (**2026-04-25**) — в **`app/outcomes/page.tsx`** добавлен read-only warning по **`MASTER` §9.3** при множественных незавершённых outcomes (`draft/active/blocked`) без backend enforcement; в **`app/outcomes/[id]/page.tsx`** добавлен честный блок WIP discipline с указанием, что проверка параллельного WIP остаётся на `/outcomes` и не расширяет API scope. Без форм/CRUD/мутаций/server actions. Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - [ ] **`MASTER` §7–§8** в продуктовом смысле (живой Today + динамика §8.2 + API из UI) — **не** заявлять **done** для фазы 7 до отдельных задач / evidence
 
 ## Done Criteria (фаза 5 — закрыта)
@@ -89,6 +90,7 @@
 - [x] Полный Definition of done §3 + сверка **§3.1–§3.2** в `MASTER_TODO_CURSOR.md` с репозиторием (**RB-3.phase-close-sync**)
 
 ## What Was Completed
+- **P9-9.3-wip-discipline-honest-warning-surface (2026-04-25):** выполнена минимальная UI/copy-дисциплина WIP без backend-изменений. На **`/outcomes`** при `result.kind === ok` считается число незавершённых outcomes по статусам **`draft` / `active` / `blocked`**; если таких больше одного — показывается явный warning-блок «WIP discipline warning (MASTER 9.3)» с честной оговоркой: это только read-only сигнал, без мутаций и без backend enforcement. На **`/outcomes/[id]`** добавлен companion-блок **WIP discipline**, который явно говорит, что детальный route не выполняет per-project enforcement и не расширяет API scope. Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - **P9-9.2-outcome-detail-readonly-skeleton (2026-04-25):** добавлен новый route **`/outcomes/[id]`** в файле **`app/outcomes/[id]/page.tsx`** как минимальный read-only detail surface по **`MASTER` §9.2**. Реализованы разделы **Summary / Assumptions / Acceptance / Evidence / Release readiness delta**; добавлена ссылка **`← Back to /outcomes`**; явно зафиксированы ограничения: **без CRUD UI**, **без форм**, **без мутаций**, **без server actions**, **без backend расширения**. Данные загружаются только через существующие GET API; если данных нет/shape не покрыт, показывается текст **"Data is not available from the current v1 API yet."**; честно отделены DB/API-лейблы от L2/L3 из **`RELEASE_CRITERIA_V1.md`** и отмечено, что продукт остаётся **not_release_ready**. Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - **PR3-conflict-resolution-only (2026-04-25):** выполнено только устранение merge-conflict-поверхности для GitHub PR #3 в файлах **`DOCS/STATUS.md`** и **`app/outcomes/page.tsx`** без старта **`P9-9.2`**/**`P9-9.3`** и без расширения product scope. Для **`/outcomes`** подтверждён сохранённый read-only API baseline: optional **`?project_id=<uuid>`**, поля **`status` / `release_readiness` / `updated_at`**, честный placeholder **risk/blocker/next-step**. Toolchain: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**.
 - **P9-font-build-blocker-fix-system-fonts (2026-04-25):** устранён блокер сборки без сети: в **`app/layout.tsx`** удалён импорт **`next/font/google`** (`Geist`, `Geist_Mono`) и привязка CSS-переменных от remote fonts; в **`app/globals.css`** добавлены локальные/system fallback-переменные **`--font-sans`** и **`--font-geist-mono`**. Scope не расширялся (без API/DB/feature). Проверки: **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0**; `next/font`-network blocker более не воспроизводится в этом runtime.
@@ -123,7 +125,7 @@
 - **P6-evidence-item-post-minimal (2026-04-24):** **`app/api/evidence-items/route.ts`** — добавлен **`POST /api/evidence-items`**: JSON **`outcome_id`** (UUID, существующий **`outcome`**), **`evidence_type`**, **`title`**, **`artifact_ref`**; опционально **`summary`**, **`status`** (иначе **`draft`**); **`400`** на невалидный ввод; **`404`** **`outcome not found`** (предпроверка + **`23503`**); ответ **`201`** **`{ evidence_item: … }`** в том же snake_case, что и элементы **`GET`**. Рефакторинг **`GET`**: общий **`mapEvidenceRow`**. **`README.md`** — пример **`node -e "fetch(...POST...)"`** для smoke. Проверка toolchain (**без** обязательного Postgres на машине CI-агента): **`npm run typecheck`**, **`npm run lint`**, **`npm test`**, **`npm run build`** — **exit 0** (**2026-04-24**, полный **`next build`** ~6 min на этой машине). **Read-back** через **`GET`** после **`POST`** — **не** автоматизирован в **`npm test`**; честный proof — ручной шаг в **`Current Task`**.
 
 ## What Is In Progress
-- item: **Фаза 7** — блокер `next/font` снят, **`P9-9.1-outcomes-list-readonly-fields`** теперь подтверждён как **verified** (toolchain + `npm run build` = exit 0); **`P9-9.2-outcome-detail-readonly-skeleton`** закрыт как **verified**; следующий task по **`NEXT_STEP`** — **`P9-9.3-wip-discipline-honest-warning-surface`**.
+- item: **Фаза 7** — блокер `next/font` снят, **`P9-9.1-outcomes-list-readonly-fields`** теперь подтверждён как **verified** (toolchain + `npm run build` = exit 0); **`P9-9.3-wip-discipline-honest-warning-surface`** закрыт как **verified**; следующий task по **`NEXT_STEP`** — **`P10-10.1-assumptions-readonly-surface-minimal`**.
 
 ## What Is Blocked
 - item: нет
@@ -182,6 +184,7 @@
 - `app/layout.tsx`, `app/globals.css`, `DOCS/STATUS.md` *(**P9-font-build-blocker-fix-system-fonts**)*
 - `DOCS/STATUS.md`, `app/outcomes/page.tsx` *(**PR3-conflict-resolution-only**)*
 - `app/outcomes/[id]/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.2-outcome-detail-readonly-skeleton**)*
+- `app/outcomes/page.tsx`, `app/outcomes/[id]/page.tsx`, `DOCS/STATUS.md`, `DOCS/NEXT_STEP.md` *(**P9-9.3-wip-discipline-honest-warning-surface**)*
 
 ## Notes
 - **Форматирование (format):** Prettier **намеренно отложен** (см. предыдущие Notes).
