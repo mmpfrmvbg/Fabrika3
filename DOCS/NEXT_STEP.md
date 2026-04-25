@@ -2,27 +2,27 @@
 
 ## Single Next Step
 
-- title: **`P9-9.3-wip-discipline-copy-honesty`**: по **`MASTER` §9.3** добавить минимальный честный copy-level WIP guard в текущие read-only поверхности (без backend enforcement): явно показать правило «one active outcome at a time» и предупреждение о риске параллельных незавершённых outcomes как текст/бейдж, без фальшивой автоматизации. Toolchain + **`DOCS/STATUS.md`**.
+- title: **`P9-9.2-outcome-detail-readonly-skeleton`**: начать **`MASTER` §9.2** — добавить route **`/outcomes/[id]`** как честный read-only skeleton (Summary, Acceptance, Assumptions, Evidence, Release readiness delta) на текущих GET API, **без** форм/CRUD и без расширения backend scope. Обновить навигацию с `/outcomes` на detail link только после подтверждения данных. Toolchain + **`DOCS/STATUS.md`**.
 - owner: cursor
 - type: implementation
 - priority: high
 
 ## Why This Is The Next Step
 
-- **`P9-9.2`** завершил route-каркас детали outcome. Следующий шаг по **`MASTER` §9** — зафиксировать дисциплину WIP в честном UI-копирайте, не расширяя API/DB scope.
+- **`P9-9.1`** выполнил цель списка (поля + placeholder honesty). Следующий шаг по **`MASTER` §9** — начать страницу детали outcome, сохраняя behavior-first и read-only дисциплину.
 
 ## Input Needed
 
-- **`app/page.tsx`**, **`app/outcomes/page.tsx`**, **`app/outcomes/[id]/page.tsx`**, **`DOCS/MASTER_TODO_CURSOR.md`** §9.3.
+- **`app/outcomes/page.tsx`**, **`DOCS/UI_V1.md`** §3.2, **`DOCS/MASTER_TODO_CURSOR.md`** §9.2.
 
 ## Exact Action
 
-- Добавить узкие copy/badge-подсказки про one-active-outcome и риск параллельного WIP в существующие read-only экраны. Затем **`typecheck` / `lint` / `test` / `build`** + **`STATUS`**.
+- Добавить **`app/outcomes/[id]/page.tsx`** (узкий diff) и, при необходимости, минимальный helper для read-only загрузки. Затем **`typecheck` / `lint` / `test` / `build`** + **`STATUS`**.
 
 ## Definition of Done
 
-- [ ] UI явно отражает WIP-дисциплину на уровне честного текста/индикаторов, без новых мутаций/API/enforcement; evidence записан в **`STATUS`**.
+- [ ] Есть route **`/outcomes/[id]`** с read-only разделами §9.2; нет мутаций/форм; честные empty/error состояния; evidence записан в **`STATUS`**.
 
 ## If Blocked
 
-- fallback: если правило нельзя отразить без расширения API, оставить строго статический disclaimer и зафиксировать ограничение в **`STATUS`**.
+- fallback: если текущий API не даёт все поля для одного из разделов, показывать явный placeholder «данных нет в API», не расширяя backend в этой задаче.
