@@ -2,27 +2,29 @@
 
 ## Single Next Step
 
-- title: **`P9-9.2-outcome-detail-readonly-skeleton`**: начать **`MASTER` §9.2** — добавить route **`/outcomes/[id]`** как честный read-only skeleton (Summary, Acceptance, Assumptions, Evidence, Release readiness delta) на текущих GET API, **без** форм/CRUD и без расширения backend scope. Обновить навигацию с `/outcomes` на detail link только после подтверждения данных. Toolchain + **`DOCS/STATUS.md`**.
+- title: **`P9-9.3-wip-discipline-honest-warning-surface`**: выполнить **`MASTER` §9.3** в минимальном v1-объёме — добавить на read-only поверхности честный warning о параллельных незавершённых outcomes (без форм/мутаций/CRUD и без расширения backend scope), затем прогнать toolchain и зафиксировать evidence в **`DOCS/STATUS.md`**.
 - owner: cursor
 - type: implementation
 - priority: high
 
 ## Why This Is The Next Step
 
-- **`P9-9.1`** выполнил цель списка (поля + placeholder honesty). Следующий шаг по **`MASTER` §9** — начать страницу детали outcome, сохраняя behavior-first и read-only дисциплину.
+- **`P9-9.2`** закрыт: есть read-only detail skeleton **`/outcomes/[id]`** с секциями и honesty-copy. Следующий шаг по порядку **`MASTER` §9** — минимальная дисциплина WIP из §9.3.
 
 ## Input Needed
 
-- **`app/outcomes/page.tsx`**, **`DOCS/UI_V1.md`** §3.2, **`DOCS/MASTER_TODO_CURSOR.md`** §9.2.
+- **`DOCS/MASTER_TODO_CURSOR.md`** §9.3
+- текущие read-only UI поверхности outcomes (**`app/outcomes/page.tsx`**, **`app/outcomes/[id]/page.tsx`**)
+- **`DOCS/UI_V1.md`** и **`DOCS/RELEASE_CRITERIA_V1.md`** для honesty-copy
 
 ## Exact Action
 
-- Добавить **`app/outcomes/[id]/page.tsx`** (узкий diff) и, при необходимости, минимальный helper для read-only загрузки. Затем **`typecheck` / `lint` / `test` / `build`** + **`STATUS`**.
+- Добавить узкий read-only warning-сигнал о множественных незавершённых outcomes (без изменения API/schema/migrations), не выходя за scope §9.3; затем выполнить **`npm run typecheck` / `npm run lint` / `npm test` / `npm run build`** и обновить **`DOCS/STATUS.md`**.
 
 ## Definition of Done
 
-- [ ] Есть route **`/outcomes/[id]`** с read-only разделами §9.2; нет мутаций/форм; честные empty/error состояния; evidence записан в **`STATUS`**.
+- [ ] Есть явный честный WIP warning для параллельных незавершённых outcomes; нет мутаций и расширения backend scope; evidence в **`STATUS`**.
 
 ## If Blocked
 
-- fallback: если текущий API не даёт все поля для одного из разделов, показывать явный placeholder «данных нет в API», не расширяя backend в этой задаче.
+- fallback: если текущие GET API не позволяют надёжно вычислить WIP-сигнал, оставить прозрачный placeholder о недостающих данных без backend-расширения в рамках этой задачи.
