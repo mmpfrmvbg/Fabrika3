@@ -227,14 +227,16 @@ export default async function OutcomesIndexPage({ searchParams }: OutcomesIndexP
             role="status"
           >
             <p className="font-medium">WIP discipline warning (MASTER 9.3)</p>
-            <p className="mt-2">
-              API currently shows <strong>{unfinishedCount}</strong> unfinished outcomes (
-              <code className="rounded bg-muted px-1 py-0.5 text-foreground">draft</code>,{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-foreground">active</code>,{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-foreground">blocked</code>). v1
-              guidance is one active outcome focus; this is a read-only warning only, with no
-              backend enforcement and no mutations on this page.
-            </p>
+            <ul className="mt-2 list-inside list-disc space-y-1">
+              <li>
+                API currently shows <strong>{unfinishedCount}</strong> unfinished outcomes (
+                <code className="rounded bg-muted px-1 py-0.5 text-foreground">draft</code>,{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-foreground">active</code>,{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-foreground">blocked</code>).
+              </li>
+              <li>v1 guidance is one active outcome focus at a time.</li>
+              <li>This is a read-only honesty signal only (no backend enforcement, no mutations here).</li>
+            </ul>
           </div>
         ) : null}
 

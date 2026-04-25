@@ -9,7 +9,8 @@
 
 ## Why This Is The Next Step
 
-- **`P9-9.3`** закрыт: есть честный read-only WIP warning для параллельных незавершённых outcomes. Следующий шаг по порядку roadmap — **`MASTER` §10.1 (Assumptions CRUD)**, начиная с минимального безопасного read-only UI-слоя.
+- **`P9-9.3`** закрыт и дополнительно отполирован по copy/structure (followup без расширения scope): warning остаётся строго read-only и честно помечен как сигнал без backend enforcement.
+- Следующий шаг по порядку roadmap — **`MASTER` §10.1 (Assumptions CRUD)**, начиная с минимального безопасного read-only UI-слоя.
 
 ## Input Needed
 
