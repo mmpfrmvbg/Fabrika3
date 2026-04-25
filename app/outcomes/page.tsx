@@ -230,6 +230,14 @@ export default async function OutcomesIndexPage() {
                           <dt className="font-medium text-foreground/80">release_readiness</dt>
                           <dd className="font-mono">{o.release_readiness}</dd>
                         </div>
+                        <div>
+                          <dt className="font-medium text-foreground/80">updated_at</dt>
+                          <dd className="font-mono">{o.updated_at}</dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="font-medium text-foreground/80">risk / blocker / next step (placeholder)</dt>
+                          <dd>{"Placeholder only: GET /api/outcomes does not provide explicit risk, blocker reason, or next-step fields yet."}</dd>
+                        </div>
                       </dl>
                       {o.release_readiness_note ? (
                         <p className="mt-2 text-xs text-muted-foreground">
